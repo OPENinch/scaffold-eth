@@ -3,10 +3,28 @@
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-  await deploy("OneSplit", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+
+  const OneSplitView = await deploy("OneSplitView", {
     from: deployer,
-    args: ["0x3F3e18aef051dC2b489CEf138BB9e224F78f7117"],
+    args: [],
+    log: true,
+  });
+
+  const OneSplitViewWrap = await deploy("OneSplitViewWrap", {
+    from: deployer,
+    args: [ OneSplitView.address ],
+    log: true,
+  });
+
+  const OneSplit = await deploy("OneSplit", {
+    from: deployer,
+    args: [ OneSplitViewWrap.address ],
+    log: true,
+  });
+
+  const OneSplitWrap = await deploy("OneSplitWrap", {
+    from: deployer,
+    args: [ OneSplitViewWrap.address, OneSplit.address ],
     log: true,
   });
 
@@ -42,4 +60,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
   */
 };
-module.exports.tags = ["OneSplit"];
+module.exports.tags = ["OneSplitView", "OneSplitViewWrap", "OneSplit", "OneSplitWrap"];
