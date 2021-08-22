@@ -3,12 +3,16 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IWETH.sol";
 import "./interfaces/IUniswapV2Exchange.sol";
-import "./IOneSplit.sol";
-import "./UniversalERC20.sol";
-
+import "./interfaces/IOneSplit.sol";
+import "./libraries/DisableFlags.sol";
+import "./libraries/UniversalERC20.sol";
+import "./libraries/UniswapV2ExchangeLib.sol";
+import "./OneSplitConsts.sol";
 
 abstract contract IFreeFromUpTo is IERC20 {
     function freeFromUpTo(address from, uint256 value) virtual external returns(uint256 freed);
@@ -22,7 +26,6 @@ interface IReferralGasSponsor {
     ) external;
 }
 
-
 library Array {
     function first(IERC20[] memory arr) internal pure returns(IERC20) {
         return arr[0];
@@ -32,7 +35,6 @@ library Array {
         return arr[arr.length - 1];
     }
 }
-
 
 //
 // Security assumptions:
@@ -44,7 +46,7 @@ library Array {
 //    presented in `flags` or from transaction origin in case of FLAG_ENABLE_CHI_BURN_BY_ORIGIN (0x4000000000000000)
 //    presented in `flags`. Burned amount would refund up to 43% of gas fees.
 //
-contract OneSplitAudit is IOneSplit, IOneSplitConsts, Ownable {
+contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
     using SafeMath for uint256;
     using UniversalERC20 for IERC20;
     using Array for IERC20[];
