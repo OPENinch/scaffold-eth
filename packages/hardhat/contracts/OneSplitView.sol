@@ -141,7 +141,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             true,  // "Uniswap Compound",
             true,  // "Uniswap CHAI",
             true,  // "Uniswap Aave",
-            true,  // "Mooniswap 1",
             true,  // "Uniswap V2",
             true,  // "Uniswap V2 (ETH)",
             true,  // "Uniswap V2 (DAI)",
@@ -159,10 +158,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             true,  // "Kyber 1"
             true,  // "Kyber 2"
             true,  // "Kyber 3"
-            true,  // "Kyber 4"
-            true,  // "Mooniswap 2"
-            true,  // "Mooniswap 3"
-            true   // "Mooniswap 4"
+            true  // "Kyber 4"
         ];
 
         for (uint i = 0; i < DEXES_COUNT; i++) {
