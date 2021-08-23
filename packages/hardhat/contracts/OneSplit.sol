@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IOneSplit.sol";
 import "./libraries/DisableFlags.sol";
 import "./libraries/UniversalERC20.sol";
@@ -90,9 +88,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
 
         function(IERC20,IERC20,uint256,uint256)[DEXES_COUNT] memory reserves = [
             _swapOnUniswap,
-            _swapOnNowhere,
             _swapOnBancor,
-            _swapOnOasis,
             _swapOnCurveCompound,
             _swapOnCurveUSDT,
             _swapOnCurveY,
@@ -101,7 +97,6 @@ contract OneSplit is IOneSplit, OneSplitRoot {
             _swapOnUniswapCompound,
             _swapOnUniswapChai,
             _swapOnUniswapAave,
-            _swapOnMooniswap,
             _swapOnUniswapV2,
             _swapOnUniswapV2ETH,
             _swapOnUniswapV2DAI,
@@ -109,20 +104,12 @@ contract OneSplit is IOneSplit, OneSplitRoot {
             _swapOnCurvePAX,
             _swapOnCurveRenBTC,
             _swapOnCurveTBTC,
-            _swapOnDforceSwap,
             _swapOnShell,
             _swapOnMStableMUSD,
             _swapOnCurveSBTC,
             _swapOnBalancer1,
             _swapOnBalancer2,
-            _swapOnBalancer3,
-            _swapOnKyber1,
-            _swapOnKyber2,
-            _swapOnKyber3,
-            _swapOnKyber4,
-            _swapOnMooniswapETH,
-            _swapOnMooniswapDAI,
-            _swapOnMooniswapUSDC
+            _swapOnBalancer3
         ];
 
         require(distribution.length <= reserves.length, "OneSplit: Distribution array should not exceed reserves array size");
@@ -477,181 +464,6 @@ contract OneSplit is IOneSplit, OneSplitRoot {
             _swapOnUniswap(fromToken, IERC20(toAave), amount, flags);
             toAave.redeem(toAave.balanceOf(address(this)));
             return;
-        }
-    }
-
-    function _swapOnMooniswap(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 /*flags*/
-    ) internal {
-        IMooniswap mooniswap = mooniswapRegistry.pools(
-            fromToken.isETH() ? ZERO_ADDRESS : fromToken,
-            destToken.isETH() ? ZERO_ADDRESS : destToken
-        );
-        fromToken.universalApprove(address(mooniswap), amount);
-        mooniswap.swap{value: fromToken.isETH() ? amount : 0}(
-            fromToken.isETH() ? ZERO_ADDRESS : fromToken,
-            destToken.isETH() ? ZERO_ADDRESS : destToken,
-            amount,
-            0,
-            0x68a17B587CAF4f9329f0e372e3A78D23A46De6b5
-        );
-    }
-
-    function _swapOnMooniswapETH(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnMooniswap(fromToken, ZERO_ADDRESS, amount, flags);
-        _swapOnMooniswap(ZERO_ADDRESS, destToken, address(this).balance, flags);
-    }
-
-    function _swapOnMooniswapDAI(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnMooniswap(fromToken, dai, amount, flags);
-        _swapOnMooniswap(dai, destToken, dai.balanceOf(address(this)), flags);
-    }
-
-    function _swapOnMooniswapUSDC(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnMooniswap(fromToken, usdc, amount, flags);
-        _swapOnMooniswap(usdc, destToken, usdc.balanceOf(address(this)), flags);
-    }
-
-    function _swapOnNowhere(
-        IERC20 /*fromToken*/,
-        IERC20 /*destToken*/,
-        uint256 /*amount*/,
-        uint256 /*flags*/
-    ) internal {
-        revert("This source was deprecated");
-    }
-
-    function _swapOnKyber1(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnKyber(
-            fromToken,
-            destToken,
-            amount,
-            flags,
-            0xff4b796265722046707200000000000000000000000000000000000000000000
-        );
-    }
-
-    function _swapOnKyber2(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnKyber(
-            fromToken,
-            destToken,
-            amount,
-            flags,
-            0xffabcd0000000000000000000000000000000000000000000000000000000000
-        );
-    }
-
-    function _swapOnKyber3(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnKyber(
-            fromToken,
-            destToken,
-            amount,
-            flags,
-            0xff4f6e65426974205175616e7400000000000000000000000000000000000000
-        );
-    }
-
-    function _swapOnKyber4(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags
-    ) internal {
-        _swapOnKyber(
-            fromToken,
-            destToken,
-            amount,
-            flags,
-            _kyberReserveIdByTokens(fromToken, destToken)
-        );
-    }
-
-    function _swapOnKyber(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags,
-        bytes32 reserveId
-    ) internal {
-        uint256 returnAmount = amount;
-
-        bytes32[] memory reserveIds = new bytes32[](1);
-        reserveIds[0] = reserveId;
-
-        if (!fromToken.isETH()) {
-            bytes memory fromHint = kyberHintHandler.buildTokenToEthHint(
-                fromToken,
-                IKyberHintHandler.TradeType.MaskIn,
-                reserveIds,
-                new uint256[](0)
-            );
-
-            fromToken.universalApprove(address(kyberNetworkProxy), amount);
-            returnAmount = kyberNetworkProxy.tradeWithHintAndFee(
-                fromToken,
-                returnAmount,
-                ETH_ADDRESS,
-                payable(address(this)),
-                uint256(0),
-                0,
-                payable(0x68a17B587CAF4f9329f0e372e3A78D23A46De6b5),
-                (flags >> 255) * 10,
-                fromHint
-            );
-        }
-
-        if (!destToken.isETH()) {
-            bytes memory destHint = kyberHintHandler.buildEthToTokenHint(
-                destToken,
-                IKyberHintHandler.TradeType.MaskIn,
-                reserveIds,
-                new uint256[](0)
-            );
-
-            returnAmount = kyberNetworkProxy.tradeWithHintAndFee{value: returnAmount}(
-                ETH_ADDRESS,
-                returnAmount,
-                destToken,
-                payable(address(this)),
-                uint256(0),
-                0,
-                payable(0x68a17B587CAF4f9329f0e372e3A78D23A46De6b5),
-                (flags >> 255) * 10,
-                destHint
-            );
         }
     }
 
