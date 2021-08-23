@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IBalancerPool.sol";
-import "./BalancerLib.sol";
-
+import "./libraries/BalancerLib.sol";
 
 contract BalancerHelper {
     using SafeMath for uint256;

@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IAaveRegistry.sol";
-import "./UniversalERC20.sol";
-
+import "./libraries/UniversalERC20.sol";
 
 contract AaveRegistry is Ownable, IAaveRegistry {
     using UniversalERC20 for IERC20;
