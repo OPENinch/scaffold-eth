@@ -49,7 +49,6 @@ describe("OneSplit test", function () {
 });
 
 /*
-
 contract('OneSplit', function ([_, addr1]) {
     describe('OneSplit', async function () {
         before(async function () {
