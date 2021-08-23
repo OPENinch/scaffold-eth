@@ -130,9 +130,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
     ) internal view returns(uint256 returnAmount, uint256 estimateGasAmount) {
         bool[DEXES_COUNT] memory exact = [
             true,  // "Uniswap",
-            false, // "Kyber",
             false, // "Bancor",
-            false, // "Oasis",
             true,  // "Curve Compound",
             true,  // "Curve USDT",
             true,  // "Curve Y",
@@ -148,17 +146,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             true,  // "Curve Pax",
             true,  // "Curve RenBTC",
             true,  // "Curve tBTC",
-            true,  // "Dforce XSwap",
             false, // "Shell",
             true,  // "mStable",
             true,  // "Curve sBTC"
             true,  // "Balancer 1"
             true,  // "Balancer 2"
-            true,  // "Balancer 3"
-            true,  // "Kyber 1"
-            true,  // "Kyber 2"
-            true,  // "Kyber 3"
-            true  // "Kyber 4"
+            true   // "Balancer 3"
         ];
 
         for (uint i = 0; i < DEXES_COUNT; i++) {
@@ -188,9 +181,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         bool invert = flags.check(FLAG_DISABLE_ALL_SPLIT_SOURCES);
         return [
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP)            ? Calculate._NoReturn : Calculate.Uniswap,
-            Calculate._NoReturn, // invert != flags.check(FLAG_DISABLE_KYBER) ? Calculate._NoReturn : Calculate.Kyber,
             invert != flags.check(FLAG_DISABLE_BANCOR)                                        ? Calculate._NoReturn : Calculate.Bancor,
-            invert != flags.check(FLAG_DISABLE_OASIS)                                         ? Calculate._NoReturn : Calculate.Oasis,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_COMPOUND)       ? Calculate._NoReturn : Calculate.CurveCompound,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_USDT)           ? Calculate._NoReturn : Calculate.CurveUSDT,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_Y)              ? Calculate._NoReturn : Calculate.CurveY,
@@ -206,17 +197,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_PAX)            ? Calculate._NoReturn : Calculate.CurvePAX,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_RENBTC)         ? Calculate._NoReturn : Calculate.CurveRenBTC,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_TBTC)           ? Calculate._NoReturn : Calculate.CurveTBTC,
-            invert != flags.check(FLAG_DISABLE_DFORCE_SWAP)                                   ? Calculate._NoReturn : Calculate.DforceSwap,
             invert != flags.check(FLAG_DISABLE_SHELL)                                         ? Calculate._NoReturn : Calculate.Shell,
             invert != flags.check(FLAG_DISABLE_MSTABLE_MUSD)                                  ? Calculate._NoReturn : Calculate.MStableMUSD,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_SBTC)           ? Calculate._NoReturn : Calculate.CurveSBTC,
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_1)        ? Calculate._NoReturn : Calculate.Balancer1,
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_2)        ? Calculate._NoReturn : Calculate.Balancer2,
-            invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_3)        ? Calculate._NoReturn : Calculate.Balancer3,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_1)              ? Calculate._NoReturn : Calculate.Kyber1,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_2)              ? Calculate._NoReturn : Calculate.Kyber2,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_3)              ? Calculate._NoReturn : Calculate.Kyber3,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_4)              ? Calculate._NoReturn : Calculate.Kyber4
+            invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_3)        ? Calculate._NoReturn : Calculate.Balancer3
         ];
     }
 

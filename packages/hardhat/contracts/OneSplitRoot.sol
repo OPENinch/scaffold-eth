@@ -45,7 +45,7 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     using UniswapV2ExchangeLib for IUniswapV2Exchange;
     using ChaiHelper for IChai;
 
-    uint256 constant internal DEXES_COUNT = 30;
+    uint256 constant internal DEXES_COUNT = 23;
     IERC20 constant internal ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
     IERC20 constant internal ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000);
 

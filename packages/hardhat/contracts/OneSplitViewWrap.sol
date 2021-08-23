@@ -14,7 +14,6 @@ import "./OneSplitIearnView.sol";
 import "./OneSplitIdleView.sol";
 import "./OneSplitWethView.sol";
 import "./OneSplitDMMView.sol";
-import "./OneSplitMooniswapTokenView.sol";
 
 contract OneSplitViewWrap is
     OneSplitViewWrapBase,
@@ -27,8 +26,7 @@ contract OneSplitViewWrap is
     OneSplitIearnView,
     OneSplitIdleView,
     OneSplitWethView,
-    OneSplitDMMView,
-    OneSplitMooniswapTokenView
+    OneSplitDMMView
 {
     IOneSplitView public oneSplitView;
 
@@ -75,8 +73,7 @@ contract OneSplitViewWrap is
                OneSplitFulcrumView, 
                OneSplitIdleView, 
                OneSplitIearnView, 
-               OneSplitMStableView, 
-               OneSplitMooniswapTokenView, 
+               OneSplitMStableView,
                OneSplitViewWrapBase, 
                OneSplitWethView) //TODO: this feels wrong
         public
