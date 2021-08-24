@@ -17,6 +17,7 @@ import "./OneSplitWeth.sol";
 import "./OneSplitMStable.sol";
 import "./OneSplitDMM.sol";
 import "./OneSplitMooniswapToken.sol";
+import "hardhat/console.sol";
 
 contract OneSplitWrap is 
     OneSplitBaseWrap
@@ -144,6 +145,7 @@ contract OneSplitWrap is
         uint256[] memory distribution,
         uint256 flags
     ) public payable returns(uint256 returnAmount) {
+        console.log('test');
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
         uint256 confirmed = fromToken.universalBalanceOf(address(this));
         _swap(fromToken, destToken, confirmed, distribution, flags);
@@ -162,7 +164,6 @@ contract OneSplitWrap is
         uint256[] memory flags
     ) public payable returns(uint256 returnAmount) {
         tokens[0].universalTransferFrom(msg.sender, address(this), amount);
-
         returnAmount = tokens[0].universalBalanceOf(address(this));
         for (uint i = 1; i < tokens.length; i++) {
             if (tokens[i - 1] == tokens[i]) {
