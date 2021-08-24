@@ -3,9 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./interfaces/IKyberNetworkProxy.sol";
-import "./interfaces/IKyberStorage.sol";
-import "./interfaces/IKyberHintHandler.sol";
 import "./interfaces/IBancorNetwork.sol";
 import "./interfaces/IBancorContractRegistry.sol";
 import "./interfaces/IBancorNetworkPathFinder.sol";
@@ -22,10 +19,8 @@ import "./interfaces/ICompoundEther.sol";
 import "./interfaces/IAaveToken.sol";
 import "./interfaces/IAaveRegistry.sol";
 import "./interfaces/IAaveLendingPool.sol";
-import "./interfaces/IMooniswap.sol";
 import "./interfaces/IUniswapFactory.sol";
 import "./interfaces/IUniswapV2Factory.sol";
-import "./interfaces/IDForceSwap.sol";
 import "./interfaces/IShell.sol";
 import "./interfaces/IMStable.sol";
 import "./interfaces/IBalancerHelper.sol";
@@ -45,7 +40,7 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     using UniswapV2ExchangeLib for IUniswapV2Exchange;
     using ChaiHelper for IChai;
 
-    uint256 constant internal DEXES_COUNT = 34;
+    uint256 constant internal DEXES_COUNT = 24;
     IERC20 constant internal ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
     IERC20 constant internal ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000);
 
@@ -65,9 +60,6 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     IERC20 constant internal hbtc = IERC20(0x0316EB71485b0Ab14103307bf65a021042c6d380);
     IERC20 constant internal sbtc = IERC20(0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6);
 
-    IKyberNetworkProxy constant internal kyberNetworkProxy = IKyberNetworkProxy(0x9AAb3f75489902f3a48495025729a0AF77d4b11e);
-    IKyberStorage constant internal kyberStorage = IKyberStorage(0xC8fb12402cB16970F3C5F4b48Ff68Eb9D1289301);
-    IKyberHintHandler constant internal kyberHintHandler = IKyberHintHandler(0xa1C0Fa73c39CFBcC11ec9Eb1Afc665aba9996E2C);
     IUniswapFactory constant internal uniswapFactory = IUniswapFactory(0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95);
     IBancorContractRegistry constant internal bancorContractRegistry = IBancorContractRegistry(0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4);
     IBancorNetworkPathFinder constant internal bancorNetworkPathFinder = IBancorNetworkPathFinder(0x6F0cD8C4f6F06eAB664C7E3031909452b4B72861);
@@ -87,9 +79,7 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     IAaveLendingPool constant internal aave = IAaveLendingPool(0x398eC7346DcD622eDc5ae82352F02bE94C62d119);
     ICompound constant internal compound = ICompound(0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B);
     ICompoundEther constant internal cETH = ICompoundEther(0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5);
-    IMooniswapRegistry constant internal mooniswapRegistry = IMooniswapRegistry(0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303);
     IUniswapV2Factory constant internal uniswapV2 = IUniswapV2Factory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f);
-    IDForceSwap constant internal dforceSwap = IDForceSwap(0x03eF3f37856bD08eb47E2dE7ABc4Ddd2c19B60F2);
     IMStable constant internal musd = IMStable(0xe2f2a5C287993345a840Db3B0845fbC70f5935a5);
     IMassetValidationHelper constant internal musd_helper = IMassetValidationHelper(0xaBcC93c3be238884cc3309C19Afd128fAfC16911);
     IBalancerRegistry constant internal balancerRegistry = IBalancerRegistry(0x65e67cbc342712DF67494ACEfc06fe951EE93982);
@@ -153,31 +143,6 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
         }
 
         returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
-    }
-
-    function _kyberReserveIdByTokens(
-        IERC20 fromToken,
-        IERC20 destToken
-    ) internal view returns(bytes32) {
-        if (!fromToken.isETH() && !destToken.isETH()) {
-            return 0;
-        }
-
-        bytes32[] memory reserveIds = kyberStorage.getReserveIdsPerTokenSrc(
-            fromToken.isETH() ? destToken : fromToken
-        );
-
-        for (uint i = 0; i < reserveIds.length; i++) {
-            if ((uint256(reserveIds[i]) >> 248) != 0xBB && // Bridge
-                reserveIds[i] != 0xff4b796265722046707200000000000000000000000000000000000000000000 && // Reserve 1
-                reserveIds[i] != 0xffabcd0000000000000000000000000000000000000000000000000000000000 && // Reserve 2
-                reserveIds[i] != 0xff4f6e65426974205175616e7400000000000000000000000000000000000000)   // Reserve 3
-            {
-                return reserveIds[i];
-            }
-        }
-
-        return 0;
     }
 
     function _scaleDestTokenEthPriceTimesGasPrice(

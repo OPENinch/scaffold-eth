@@ -14,7 +14,9 @@ const KYBER_ALL = new BN('200000000000000', 16);
 const MOONISWAP_ALL = new BN('8000000000000000', 16);
 const BALANCER_ALL = new BN('1000000000000', 16);
 
-describe("OneSplit test", () => {
+describe("OneSplit test", function () {
+    this.timeout(200000);
+
     before(async () => {
         [user1, user2, ...addrs] = await ethers.getSigners();
 
@@ -22,22 +24,20 @@ describe("OneSplit test", () => {
         const OneSplitViewWrapDeployment = await ethers.getContractFactory('OneSplitViewWrap');
         const OneSplitDeployment = await ethers.getContractFactory('OneSplit');
         const OneSplitWrapDeployment = await ethers.getContractFactory('OneSplitWrap');
-        //const IMooniswapRegistryDeployment = await ethers.getContractFactory('IMooniswapRegistry');
-        //const IMooniswapDeployment = await ethers.getContractFactory('IMooniswap');
 
-        const OneSplitView = await OneSplitViewDeployment.deploy();
-        const OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
-        const OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
-        const OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
+        OneSplitView = await OneSplitViewDeployment.deploy();
+        OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
+        OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
+        OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
     });
 
-    it('should work with Mooniswap ETH => DAI', async function () {
+    it('should work with Balancer ETH => DAI', async function () {
         const res = await OneSplitWrap.getExpectedReturn(
             '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
             '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
             '1000000000000000000', // 1.0
             10,
-            DISABLE_ALL + (MOONISWAP_ALL), // enable only Mooniswap
+            DISABLE_ALL + (BALANCER_ALL), // enable only Balancer
         );
 
         console.log('Swap: 1 ETH');

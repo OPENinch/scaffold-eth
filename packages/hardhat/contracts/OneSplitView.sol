@@ -73,7 +73,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             (rets, gases[i]) = reserves[i](fromToken, destToken, amount, parts, flags);
 
             // Prepend zero and sub gas
-            int256 gas = int256(gases[i] * destTokenEthPriceTimesGasPrice / 1e18);
+            int256 gas = int256(gases[i].mul(destTokenEthPriceTimesGasPrice).div(1e18));
             matrix[i] = new int256[](parts + 1);
             for (uint j = 0; j < rets.length; j++) {
                 matrix[i][j + 1] = int256(rets[j]) - gas;
@@ -128,7 +128,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
     ) internal view returns(uint256 returnAmount, uint256 estimateGasAmount) {
         bool[DEXES_COUNT] memory exact = [
             true,  // "Uniswap",
-            false, // "Kyber",
             false, // "Bancor",
             false, // "Oasis",
             true,  // "Curve Compound",
@@ -139,7 +138,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             true,  // "Uniswap Compound",
             true,  // "Uniswap CHAI",
             true,  // "Uniswap Aave",
-            true,  // "Mooniswap 1",
             true,  // "Uniswap V2",
             true,  // "Uniswap V2 (ETH)",
             true,  // "Uniswap V2 (DAI)",
@@ -147,20 +145,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             true,  // "Curve Pax",
             true,  // "Curve RenBTC",
             true,  // "Curve tBTC",
-            true,  // "Dforce XSwap",
             false, // "Shell",
             true,  // "mStable",
             true,  // "Curve sBTC"
             true,  // "Balancer 1"
             true,  // "Balancer 2"
-            true,  // "Balancer 3"
-            true,  // "Kyber 1"
-            true,  // "Kyber 2"
-            true,  // "Kyber 3"
-            true,  // "Kyber 4"
-            true,  // "Mooniswap 2"
-            true,  // "Mooniswap 3"
-            true   // "Mooniswap 4"
+            true  // "Balancer 3"
         ];
 
         for (uint i = 0; i < DEXES_COUNT; i++) {
@@ -190,7 +180,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         bool invert = flags.check(FLAG_DISABLE_ALL_SPLIT_SOURCES);
         return [
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP)            ? _calculateNoReturn : calculateUniswap,
-            _calculateNoReturn, // invert != flags.check(FLAG_DISABLE_KYBER) ? _calculateNoReturn : calculateKyber,
             invert != flags.check(FLAG_DISABLE_BANCOR)                                        ? _calculateNoReturn : calculateBancor,
             invert != flags.check(FLAG_DISABLE_OASIS)                                         ? _calculateNoReturn : calculateOasis,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_COMPOUND)       ? _calculateNoReturn : calculateCurveCompound,
@@ -201,7 +190,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP_COMPOUND)   ? _calculateNoReturn : calculateUniswapCompound,
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP_CHAI)       ? _calculateNoReturn : calculateUniswapChai,
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP_AAVE)       ? _calculateNoReturn : calculateUniswapAave,
-            invert != flags.check(FLAG_DISABLE_MOONISWAP_ALL | FLAG_DISABLE_MOONISWAP)        ? _calculateNoReturn : calculateMooniswap,
             invert != flags.check(FLAG_DISABLE_UNISWAP_V2_ALL | FLAG_DISABLE_UNISWAP_V2)      ? _calculateNoReturn : calculateUniswapV2,
             invert != flags.check(FLAG_DISABLE_UNISWAP_V2_ALL | FLAG_DISABLE_UNISWAP_V2_ETH)  ? _calculateNoReturn : calculateUniswapV2ETH,
             invert != flags.check(FLAG_DISABLE_UNISWAP_V2_ALL | FLAG_DISABLE_UNISWAP_V2_DAI)  ? _calculateNoReturn : calculateUniswapV2DAI,
@@ -209,20 +197,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_PAX)            ? _calculateNoReturn : calculateCurvePAX,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_RENBTC)         ? _calculateNoReturn : calculateCurveRenBTC,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_TBTC)           ? _calculateNoReturn : calculateCurveTBTC,
-            invert != flags.check(FLAG_DISABLE_DFORCE_SWAP)                                   ? _calculateNoReturn : calculateDforceSwap,
             invert != flags.check(FLAG_DISABLE_SHELL)                                         ? _calculateNoReturn : calculateShell,
             invert != flags.check(FLAG_DISABLE_MSTABLE_MUSD)                                  ? _calculateNoReturn : calculateMStableMUSD,
             invert != flags.check(FLAG_DISABLE_CURVE_ALL | FLAG_DISABLE_CURVE_SBTC)           ? _calculateNoReturn : calculateCurveSBTC,
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_1)        ? _calculateNoReturn : calculateBalancer1,
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_2)        ? _calculateNoReturn : calculateBalancer2,
-            invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_3)        ? _calculateNoReturn : calculateBalancer3,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_1)              ? _calculateNoReturn : calculateKyber1,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_2)              ? _calculateNoReturn : calculateKyber2,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_3)              ? _calculateNoReturn : calculateKyber3,
-            invert != flags.check(FLAG_DISABLE_KYBER_ALL | FLAG_DISABLE_KYBER_4)              ? _calculateNoReturn : calculateKyber4,
-            invert != flags.check(FLAG_DISABLE_MOONISWAP_ALL | FLAG_DISABLE_MOONISWAP_ETH)    ? _calculateNoReturn : calculateMooniswapOverETH,
-            invert != flags.check(FLAG_DISABLE_MOONISWAP_ALL | FLAG_DISABLE_MOONISWAP_DAI)    ? _calculateNoReturn : calculateMooniswapOverDAI,
-            invert != flags.check(FLAG_DISABLE_MOONISWAP_ALL | FLAG_DISABLE_MOONISWAP_USDC)   ? _calculateNoReturn : calculateMooniswapOverUSDC
+            invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_3)        ? _calculateNoReturn : calculateBalancer3
         ];
     }
 
@@ -690,34 +670,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         return (_linearInterpolation(maxRet, parts), 300_000);
     }
 
-    function calculateDforceSwap(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 /*flags*/
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        (bool success, bytes memory data) = address(dforceSwap).staticcall(
-            abi.encodeWithSelector(
-                dforceSwap.getAmountByInput.selector,
-                fromToken,
-                destToken,
-                amount
-            )
-        );
-        if (!success || data.length == 0) {
-            return (new uint256[](parts), 0);
-        }
-
-        uint256 maxRet = abi.decode(data, (uint256));
-        uint256 available = destToken.universalBalanceOf(address(dforceSwap));
-        if (maxRet > available) {
-            return (new uint256[](parts), 0);
-        }
-
-        return (_linearInterpolation(maxRet, parts), 160_000);
-    }
-
     function _calculateUniswapFormula(uint256 fromBalance, uint256 toBalance, uint256 amount) internal pure returns(uint256) {
         if (amount == 0) {
             return 0;
@@ -914,180 +866,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         return (new uint256[](parts), 0);
     }
 
-    function calculateKyber1(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        return _calculateKyber(
-            fromToken,
-            destToken,
-            amount,
-            parts,
-            flags,
-            0xff4b796265722046707200000000000000000000000000000000000000000000 // 0x63825c174ab367968EC60f061753D3bbD36A0D8F
-        );
-    }
-
-    function calculateKyber2(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        return _calculateKyber(
-            fromToken,
-            destToken,
-            amount,
-            parts,
-            flags,
-            0xffabcd0000000000000000000000000000000000000000000000000000000000 // 0x7a3370075a54B187d7bD5DceBf0ff2B5552d4F7D
-        );
-    }
-
-    function calculateKyber3(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        return _calculateKyber(
-            fromToken,
-            destToken,
-            amount,
-            parts,
-            flags,
-            0xff4f6e65426974205175616e7400000000000000000000000000000000000000 // 0x4f32BbE8dFc9efD54345Fc936f9fEF1048746fCF
-        );
-    }
-
-    function calculateKyber4(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        bytes32 reserveId = _kyberReserveIdByTokens(fromToken, destToken);
-        if (reserveId == 0) {
-            return (new uint256[](parts), 0);
-        }
-
-        return _calculateKyber(
-            fromToken,
-            destToken,
-            amount,
-            parts,
-            flags,
-            reserveId
-        );
-    }
-
-    function _kyberGetRate(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 flags,
-        bytes memory hint
-    ) private view returns(uint256) {
-        (, bytes memory data) = address(kyberNetworkProxy).staticcall(
-            abi.encodeWithSelector(
-                kyberNetworkProxy.getExpectedRateAfterFee.selector,
-                fromToken,
-                destToken,
-                amount,
-                (flags >> 255) * 10,
-                hint
-            )
-        );
-
-        return (data.length == 32) ? abi.decode(data, (uint256)) : 0;
-    }
-
-    function _calculateKyber(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags,
-        bytes32 reserveId
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        bytes memory fromHint;
-        bytes memory destHint;
-        {
-            bytes32[] memory reserveIds = new bytes32[](1);
-            reserveIds[0] = reserveId;
-
-            (bool success, bytes memory data) = address(kyberHintHandler).staticcall(
-                abi.encodeWithSelector(
-                    kyberHintHandler.buildTokenToEthHint.selector,
-                    fromToken,
-                    IKyberHintHandler.TradeType.MaskIn,
-                    reserveIds,
-                    new uint256[](0)
-                )
-            );
-            fromHint = success ? abi.decode(data, (bytes)) : bytes("");
-
-            (success, data) = address(kyberHintHandler).staticcall(
-                abi.encodeWithSelector(
-                    kyberHintHandler.buildEthToTokenHint.selector,
-                    destToken,
-                    IKyberHintHandler.TradeType.MaskIn,
-                    reserveIds,
-                    new uint256[](0)
-                )
-            );
-            destHint = success ? abi.decode(data, (bytes)) : bytes("");
-        }
-
-        uint256 fromTokenDecimals = 10 ** IERC20(fromToken).universalDecimals();
-        uint256 destTokenDecimals = 10 ** IERC20(destToken).universalDecimals();
-        rets = new uint256[](parts);
-        for (uint i = 0; i < parts; i++) {
-            if (i > 0 && rets[i - 1] == 0) {
-                break;
-            }
-            rets[i] = amount * (i + 1) / (parts);
-
-            if (!fromToken.isETH()) {
-                if (fromHint.length == 0) {
-                    rets[i] = 0;
-                    break;
-                }
-                uint256 rate = _kyberGetRate(
-                    fromToken,
-                    ETH_ADDRESS,
-                    rets[i],
-                    flags,
-                    fromHint
-                );
-                rets[i] = rate * (rets[i]) / (fromTokenDecimals);
-            }
-
-            if (!destToken.isETH() && rets[i] > 0) {
-                if (destHint.length == 0) {
-                    rets[i] = 0;
-                    break;
-                }
-                uint256 rate = _kyberGetRate(
-                    ETH_ADDRESS,
-                    destToken,
-                    rets[i],
-                    10,
-                    destHint
-                );
-                rets[i] = rate * (rets[i]) * (destTokenDecimals) / (1e36);
-            }
-        }
-
-        return (rets, 100_000);
-    }
-
     function calculateBancor(
         IERC20 /*fromToken*/,
         IERC20 /*destToken*/,
@@ -1155,100 +933,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         }
 
         return (rets, 500_000);
-    }
-
-    function calculateMooniswapMany(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256[] memory amounts
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        rets = new uint256[](amounts.length);
-
-        IMooniswap mooniswap = mooniswapRegistry.pools(
-            fromToken.isETH() ? ZERO_ADDRESS : fromToken,
-            destToken.isETH() ? ZERO_ADDRESS : destToken
-        );
-        if (mooniswap == IMooniswap(address(0))) {
-            return (rets, 0);
-        }
-
-        uint256 fee = mooniswap.fee();
-        uint256 fromBalance = mooniswap.getBalanceForAddition(fromToken.isETH() ? ZERO_ADDRESS : fromToken);
-        uint256 destBalance = mooniswap.getBalanceForRemoval(destToken.isETH() ? ZERO_ADDRESS : destToken);
-        if (fromBalance == 0 || destBalance == 0) {
-            return (rets, 0);
-        }
-
-        for (uint i = 0; i < amounts.length; i++) {
-            uint256 amount = amounts[i] - (amounts[i] * (fee) / (1e18));
-            rets[i] = amount * (destBalance) / (
-                fromBalance + (amount)
-            );
-        }
-
-        return (rets, (fromToken.isETH() || destToken.isETH()) ? 80_000 : 110_000);
-    }
-
-    function calculateMooniswap(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 /*flags*/
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        return calculateMooniswapMany(
-            fromToken,
-            destToken,
-            _linearInterpolation(amount, parts)
-        );
-    }
-
-    function calculateMooniswapOverETH(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        if (fromToken.isETH() || destToken.isETH()) {
-            return (new uint256[](parts), 0);
-        }
-
-        (uint256[] memory results, uint256 gas1) = calculateMooniswap(fromToken, ZERO_ADDRESS, amount, parts, flags);
-        (rets, gas) = calculateMooniswapMany(ZERO_ADDRESS, destToken, results);
-        gas = gas + (gas1);
-    }
-
-    function calculateMooniswapOverDAI(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        if (fromToken == dai || destToken == dai) {
-            return (new uint256[](parts), 0);
-        }
-
-        (uint256[] memory results, uint256 gas1) = calculateMooniswap(fromToken, dai, amount, parts, flags);
-        (rets, gas) = calculateMooniswapMany(dai, destToken, results);
-        gas = gas + (gas1);
-    }
-
-    function calculateMooniswapOverUSDC(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        if (fromToken == usdc || destToken == usdc) {
-            return (new uint256[](parts), 0);
-        }
-
-        (uint256[] memory results, uint256 gas1) = calculateMooniswap(fromToken, usdc, amount, parts, flags);
-        (rets, gas) = calculateMooniswapMany(usdc, destToken, results);
-        gas = gas + (gas1);
     }
 
     function calculateUniswapV2(
