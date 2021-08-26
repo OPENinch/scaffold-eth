@@ -7,15 +7,6 @@ const { createVerify } = require("crypto");
 
 use(solidity);
 
-<<<<<<< Updated upstream
-
-
-const DISABLE_ALL = new BN('20000000', 16) + (new BN('40000000', 16));
-const CURVE_SYNTHETIX = new BN('40000', 16);
-const CURVE_COMPOUND = new BN('1000', 16);
-const CURVE_ALL = new BN('200000000000', 16);
-const BALANCER_ALL = new BN('1000000000000', 16);
-=======
 FLAG_DISABLE_UNISWAP = 0x01;
 FLAG_DISABLE_BANCOR = 0x04;
 FLAG_DISABLE_OASIS = 0x08;
@@ -78,10 +69,9 @@ const renbtc    = ['0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',   'RENBTC', 1e8
 const wbtc      = ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',   'WBTC',   1e8,  '600000'];    // passes eth -> wbtc on any
 const tbtc      = ['0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847',   'TBTC',   1e18, '600000'];    // fails eth -> tbtc on any
 const hbtc      = ['0x0316EB71485b0Ab14103307bf65a021042c6d380',   'HBTC',   1e18, '390000000']; // passes eth -> hbtc on any
-const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',   'SBTC',   1e18, '390000000']; // passes eth -> sbtc on any
+const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',   'SBTC',   1e14, '390000000']; // passes eth -> sbtc on any
 
 const list = [weth, usdt, tusd, busd, susd, pax, renbtc, wbtc, hbtc, sbtc];
->>>>>>> Stashed changes
 
 describe("OneSplit test", function () {
     this.timeout(200000);
