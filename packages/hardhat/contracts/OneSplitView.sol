@@ -8,6 +8,7 @@ import "./libraries/DisableFlags.sol";
 import "./libraries/ChaiHelper.sol";
 import "./libraries/UniversalERC20.sol";
 import "./OneSplitRoot.sol";
+import "hardhat/console.sol";
 
 contract OneSplitView is IOneSplitView, OneSplitRoot {
     using SafeMath for uint256;
@@ -174,10 +175,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
 
     function _getAllReserves(uint256 flags)
         internal
-        pure
+        //pure
+        view
         returns(function(IERC20,IERC20,uint256,uint256,uint256) view returns(uint256[] memory, uint256)[DEXES_COUNT] memory)
     {
         bool invert = flags.check(FLAG_DISABLE_ALL_SPLIT_SOURCES);
+
         return [
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP)            ? _calculateNoReturn : calculateUniswap,
             invert != flags.check(FLAG_DISABLE_BANCOR)                                        ? _calculateNoReturn : calculateBancor,
@@ -257,6 +260,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('bal 1');
         return _calculateBalancer(
             fromToken,
             destToken,
@@ -273,6 +277,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('bal 2');
         return _calculateBalancer(
             fromToken,
             destToken,
@@ -289,6 +294,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('bal 3');
         return _calculateBalancer(
             fromToken,
             destToken,
@@ -305,6 +311,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('mstable musd');
         rets = new uint256[](parts);
 
         if ((fromToken != usdc && fromToken != dai && fromToken != usdt && fromToken != tusd) ||
@@ -455,6 +462,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve compound');
         IERC20[] memory tokens = new IERC20[](2);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -476,6 +484,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve usdt');
         IERC20[] memory tokens = new IERC20[](3);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -498,6 +507,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve y');
         IERC20[] memory tokens = new IERC20[](4);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -521,6 +531,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve binance');
         IERC20[] memory tokens = new IERC20[](4);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -544,6 +555,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve synthetix');
         IERC20[] memory tokens = new IERC20[](4);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -567,6 +579,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve pax');
         IERC20[] memory tokens = new IERC20[](4);
         tokens[0] = dai;
         tokens[1] = usdc;
@@ -590,6 +603,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve renbtc');
         IERC20[] memory tokens = new IERC20[](2);
         tokens[0] = renbtc;
         tokens[1] = wbtc;
@@ -611,6 +625,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve tbtc');
         IERC20[] memory tokens = new IERC20[](3);
         tokens[0] = tbtc;
         tokens[1] = wbtc;
@@ -633,6 +648,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('curve sbtc');
         IERC20[] memory tokens = new IERC20[](3);
         tokens[0] = renbtc;
         tokens[1] = wbtc;
@@ -655,6 +671,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('shell');
         (bool success, bytes memory data) = address(shell).staticcall(abi.encodeWithSelector(
             shell.viewOriginTrade.selector,
             fromToken,
@@ -725,6 +742,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap funct');
         return _calculateUniswap(
             fromToken,
             destToken,
@@ -777,6 +795,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap compound');
         IERC20 midPreToken;
         if (!fromToken.isETH() && destToken.isETH()) {
             midPreToken = fromToken;
@@ -812,6 +831,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap chai');
         if (fromToken == dai && destToken.isETH() ||
             fromToken.isETH() && destToken == dai)
         {
@@ -838,6 +858,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap aave');
         IERC20 midPreToken;
         if (!fromToken.isETH() && destToken.isETH()) {
             midPreToken = fromToken;
@@ -873,6 +894,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('bancor funct');
         return (new uint256[](parts), 0);
         // IBancorNetwork bancorNetwork = IBancorNetwork(bancorContractRegistry.addressOf("BancorNetwork"));
 
@@ -911,6 +933,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('oasis funct');
         rets = _linearInterpolation(amount, parts);
         for (uint i = 0; i < parts; i++) {
             (bool success, bytes memory data) = address(oasisExchange).staticcall{gas: 500000}(
@@ -942,6 +965,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap v2');
         return _calculateUniswapV2(
             fromToken,
             destToken,
@@ -957,6 +981,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap v2 eth');
         if (fromToken.isETH() || fromToken == weth || destToken.isETH() || destToken == weth) {
             return (new uint256[](parts), 0);
         }
@@ -978,6 +1003,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap v2 dai');
         if (fromToken == dai || destToken == dai) {
             return (new uint256[](parts), 0);
         }
@@ -999,6 +1025,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('uniswap v2 usdc');
         if (fromToken == usdc || destToken == usdc) {
             return (new uint256[](parts), 0);
         }
@@ -1058,6 +1085,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 /*flags*/
     ) internal view returns(uint256[] memory rets, uint256 gas) {
+        console.log('4');
         this;
         return (new uint256[](parts), 0);
     }

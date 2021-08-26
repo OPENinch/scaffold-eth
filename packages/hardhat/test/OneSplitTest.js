@@ -1,35 +1,71 @@
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
 const { ethers } = require("hardhat");
-const assert = require('assert');
-const { BN, expectRevert } = require('@openzeppelin/test-helpers');
 
 use(solidity);
 
-const DISABLE_ALL = new BN('20000000', 16) + (new BN('40000000', 16));
-const CURVE_SYNTHETIX = new BN('40000', 16);
-const CURVE_COMPOUND = new BN('1000', 16);
-const CURVE_ALL = new BN('200000000000', 16);
-const KYBER_ALL = new BN('200000000000000', 16);
-const MOONISWAP_ALL = new BN('8000000000000000', 16);
-const BALANCER_ALL = new BN('1000000000000', 16);
+FLAG_DISABLE_UNISWAP = 0x01;
+FLAG_DISABLE_BANCOR = 0x04;
+FLAG_DISABLE_OASIS = 0x08;
+FLAG_DISABLE_COMPOUND = 0x10;
+FLAG_DISABLE_FULCRUM = 0x20;
+FLAG_DISABLE_CHAI = 0x40;
+FLAG_DISABLE_AAVE = 0x80;
+FLAG_DISABLE_SMART_TOKEN = 0x100;
+FLAG_DISABLE_BDAI = 0x400;
+FLAG_DISABLE_IEARN = 0x800;
+FLAG_DISABLE_CURVE_COMPOUND = 0x1000;
+FLAG_DISABLE_CURVE_USDT = 0x2000;
+FLAG_DISABLE_CURVE_Y = 0x4000;
+FLAG_DISABLE_CURVE_BINANCE = 0x8000;
+FLAG_DISABLE_CURVE_SYNTHETIX = 0x40000;
+FLAG_DISABLE_WETH = 0x80000;
+FLAG_DISABLE_UNISWAP_COMPOUND = 0x100000; // Works only when one of assets is ETH or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_UNISWAP_CHAI = 0x200000; // Works only when ETH<>DAI or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_UNISWAP_AAVE = 0x400000; // Works only when one of assets is ETH or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_IDLE = 0x800000;
+FLAG_DISABLE_UNISWAP_V2 = 0x2000000;
+FLAG_DISABLE_UNISWAP_V2_ETH = 0x4000000;
+FLAG_DISABLE_UNISWAP_V2_DAI = 0x8000000;
+FLAG_DISABLE_UNISWAP_V2_USDC = 0x10000000;
+FLAG_DISABLE_ALL_SPLIT_SOURCES = 0x20000000;
+FLAG_DISABLE_ALL_WRAP_SOURCES = 0x40000000;
+FLAG_DISABLE_CURVE_PAX = 0x80000000;
+FLAG_DISABLE_CURVE_RENBTC = 0x100000000;
+FLAG_DISABLE_CURVE_TBTC = 0x200000000;
+FLAG_DISABLE_SHELL = 0x8000000000;
+FLAG_ENABLE_CHI_BURN = 0x10000000000;
+FLAG_DISABLE_MSTABLE_MUSD = 0x20000000000;
+FLAG_DISABLE_CURVE_SBTC = 0x40000000000;
+FLAG_DISABLE_DMM = 0x80000000000;
+FLAG_DISABLE_UNISWAP_ALL = 0x100000000000;
+FLAG_DISABLE_CURVE_ALL = 0x200000000000;
+FLAG_DISABLE_UNISWAP_V2_ALL = 0x400000000000;
+FLAG_DISABLE_SPLIT_RECALCULATION = 0x800000000000;
+FLAG_DISABLE_BALANCER_ALL = 0x1000000000000;
+FLAG_DISABLE_BALANCER_1 = 0x2000000000000;
+FLAG_DISABLE_BALANCER_2 = 0x4000000000000;
+FLAG_DISABLE_BALANCER_3 = 0x8000000000000;
+FLAG_ENABLE_REFERRAL_GAS_SPONSORSHIP = 0x80000000000000; // Turned off by default
+FLAG_ENABLE_CHI_BURN_BY_ORIGIN = 0x4000000000000000;
 
+FLAG_DISABLE_ALL = 0x1F2800000000C
 
-const eth = ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',      'ETH'];
-const weth = ['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',     'WETH'];
-const chai = ['0x06AF07097C9Eeb7fD685c692751D5C66dB49c215',     'CHAI'];
-const dai = ['0x6B175474E89094C44Da98b954EedeAC495271d0F',      'DAI'];
-const usdc = ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',     'USDC'];
-const usdt = ['0xdAC17F958D2ee523a2206206994597C13D831ec7',     'USDT'];
-const tusd = ['0x0000000000085d4780B73119b644AE5ecd22b376',     'TUSD'];
-const busd = ['0x4Fabb145d64652a948d72533023f6E7A623C7C53',     'BUSD'];
-const susd = ['0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',     'SUSD'];
-const pax = ['0x8E870D67F660D95d5be530380D0eC0bd388289E1',      'PAX'];
-const renbtc = ['0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',   'RENBTC'];
-const wbtc = ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',     'WBTC'];
-const tbtc = ['0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847',     'TBTC'];
-const hbtc = ['0x0316EB71485b0Ab14103307bf65a021042c6d380',     'HBTC'];
-const sbtc = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',     'SBTC'];
+const eth       = ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',      'ETH'];
+const weth      = ['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',     'WETH'];
+const chai      = ['0x06AF07097C9Eeb7fD685c692751D5C66dB49c215',     'CHAI'];
+const dai       = ['0x6B175474E89094C44Da98b954EedeAC495271d0F',      'DAI'];
+const usdc      = ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',     'USDC'];
+const usdt      = ['0xdAC17F958D2ee523a2206206994597C13D831ec7',     'USDT'];
+const tusd      = ['0x0000000000085d4780B73119b644AE5ecd22b376',     'TUSD'];
+const busd      = ['0x4fabb145d64652a948d72533023f6e7a623c7c53',     'BUSD'];
+const susd      = ['0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',     'SUSD'];
+const pax       = ['0x8E870D67F660D95d5be530380D0eC0bd388289E1',      'PAX'];
+const renbtc    = ['0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',   'RENBTC'];
+const wbtc      = ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',     'WBTC'];
+const tbtc      = ['0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847',     'TBTC'];
+const hbtc      = ['0x0316EB71485b0Ab14103307bf65a021042c6d380',     'HBTC'];
+const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',     'SBTC'];
 
 describe("OneSplit test", function () {
     this.timeout(200000);
@@ -49,7 +85,8 @@ describe("OneSplit test", function () {
     });
 
     from = eth;
-    to = susd;
+    to = busd;
+    decimal = 1e18
 
     it(('should work with Curve ' + from[1] + ' => ' + to[1]).toString(), async function () {
         const res = await OneSplitWrap.getExpectedReturn(
@@ -57,11 +94,12 @@ describe("OneSplit test", function () {
             to[0], // Dest token
             '1000000000000000000', // 1.0  // amount of from token
             10, // parts, higher = more granular, but effects gas usage (probably exponentially)
-            DISABLE_ALL + (CURVE_ALL), // flag (enable only curve)
+            //DISABLE_ALL + (CURVE_ALL), // flag (enable only curve)
+            FLAG_DISABLE_ALL - FLAG_DISABLE_CURVE_ALL,
         );
 
         console.log('Swap: 1', from[1]);
-        console.log('returnAmount:', res.returnAmount.toString() / 1e6, to[1]);
+        console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
         // console.log('distribution:', res.distribution.map(a => a.toString()));
         // console.log('raw:', res.returnAmount.toString());
         expect(res.returnAmount).to.be.bignumber.above('390000000');
