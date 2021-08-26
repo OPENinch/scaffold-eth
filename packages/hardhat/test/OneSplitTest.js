@@ -7,6 +7,7 @@ const { createVerify } = require("crypto");
 
 use(solidity);
 
+<<<<<<< Updated upstream
 
 
 const DISABLE_ALL = new BN('20000000', 16) + (new BN('40000000', 16));
@@ -14,6 +15,73 @@ const CURVE_SYNTHETIX = new BN('40000', 16);
 const CURVE_COMPOUND = new BN('1000', 16);
 const CURVE_ALL = new BN('200000000000', 16);
 const BALANCER_ALL = new BN('1000000000000', 16);
+=======
+FLAG_DISABLE_UNISWAP = 0x01;
+FLAG_DISABLE_BANCOR = 0x04;
+FLAG_DISABLE_OASIS = 0x08;
+FLAG_DISABLE_COMPOUND = 0x10;
+FLAG_DISABLE_FULCRUM = 0x20;
+FLAG_DISABLE_CHAI = 0x40;
+FLAG_DISABLE_AAVE = 0x80;
+FLAG_DISABLE_SMART_TOKEN = 0x100;
+FLAG_DISABLE_BDAI = 0x400;
+FLAG_DISABLE_IEARN = 0x800;
+FLAG_DISABLE_CURVE_COMPOUND = 0x1000;
+FLAG_DISABLE_CURVE_USDT = 0x2000;
+FLAG_DISABLE_CURVE_Y = 0x4000;
+FLAG_DISABLE_CURVE_BINANCE = 0x8000;
+FLAG_DISABLE_CURVE_SYNTHETIX = 0x40000;
+FLAG_DISABLE_WETH = 0x80000;
+FLAG_DISABLE_UNISWAP_COMPOUND = 0x100000; // Works only when one of assets is ETH or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_UNISWAP_CHAI = 0x200000; // Works only when ETH<>DAI or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_UNISWAP_AAVE = 0x400000; // Works only when one of assets is ETH or FLAG_ENABLE_MULTI_PATH_ETH
+FLAG_DISABLE_IDLE = 0x800000;
+FLAG_DISABLE_UNISWAP_V2 = 0x2000000;
+FLAG_DISABLE_UNISWAP_V2_ETH = 0x4000000;
+FLAG_DISABLE_UNISWAP_V2_DAI = 0x8000000;
+FLAG_DISABLE_UNISWAP_V2_USDC = 0x10000000;
+FLAG_DISABLE_ALL_SPLIT_SOURCES = 0x20000000;
+FLAG_DISABLE_ALL_WRAP_SOURCES = 0x40000000;
+FLAG_DISABLE_CURVE_PAX = 0x80000000;
+FLAG_DISABLE_CURVE_RENBTC = 0x100000000;
+FLAG_DISABLE_CURVE_TBTC = 0x200000000;
+FLAG_DISABLE_SHELL = 0x8000000000;
+FLAG_ENABLE_CHI_BURN = 0x10000000000;
+FLAG_DISABLE_MSTABLE_MUSD = 0x20000000000;
+FLAG_DISABLE_CURVE_SBTC = 0x40000000000;
+FLAG_DISABLE_DMM = 0x80000000000;
+FLAG_DISABLE_UNISWAP_ALL = 0x100000000000;
+FLAG_DISABLE_CURVE_ALL = 0x200000000000;
+FLAG_DISABLE_UNISWAP_V2_ALL = 0x400000000000;
+FLAG_DISABLE_SPLIT_RECALCULATION = 0x800000000000;
+FLAG_DISABLE_BALANCER_ALL = 0x1000000000000;
+FLAG_DISABLE_BALANCER_1 = 0x2000000000000;
+FLAG_DISABLE_BALANCER_2 = 0x4000000000000;
+FLAG_DISABLE_BALANCER_3 = 0x8000000000000;
+FLAG_ENABLE_REFERRAL_GAS_SPONSORSHIP = 0x80000000000000; // Turned off by default
+FLAG_ENABLE_CHI_BURN_BY_ORIGIN = 0x4000000000000000;
+
+FLAG_DISABLE_ALL = 0x1F2800000000C
+FLAG_ANY = 0x0;
+
+const eth       = ['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',   'ETH',    1e18, '390000000'];
+const weth      = ['0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',   'WETH',   1e18, '390000000']; // passes eth -> weth on any
+const chai      = ['0x06AF07097C9Eeb7fD685c692751D5C66dB49c215',   'CHAI',   1e18, '390000000']; // fails eth  -> chai on any
+const dai       = ['0x6B175474E89094C44Da98b954EedeAC495271d0F',   'DAI',    1e18, '390000000']; // fails eth  -> dai on any
+const usdc      = ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',   'USDC',   1e6,  '390000000']; // fails eth  -> usdc on any
+const usdt      = ['0xdAC17F958D2ee523a2206206994597C13D831ec7',   'USDT',   1e6,  '390000000']; // passes eth -> usdt on any
+const tusd      = ['0x0000000000085d4780B73119b644AE5ecd22b376',   'TUSD',   1e18, '390000000']; // passes eth -> tusd on any
+const busd      = ['0x4fabb145d64652a948d72533023f6e7a623c7c53',   'BUSD',   1e18, '390000000']; // passes eth -> busd on any
+const susd      = ['0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',   'SUSD',   1e18, '390000000']; // passes eth -> susd on any
+const pax       = ['0x8E870D67F660D95d5be530380D0eC0bd388289E1',   'PAX',    1e18, '390000000']; // passes eth -> pax on any
+const renbtc    = ['0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',   'RENBTC', 1e8,  '600000'];    // passes eth -> renbtc on any
+const wbtc      = ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',   'WBTC',   1e8,  '600000'];    // passes eth -> wbtc on any
+const tbtc      = ['0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847',   'TBTC',   1e18, '600000'];    // fails eth -> tbtc on any
+const hbtc      = ['0x0316EB71485b0Ab14103307bf65a021042c6d380',   'HBTC',   1e18, '390000000']; // passes eth -> hbtc on any
+const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',   'SBTC',   1e18, '390000000']; // passes eth -> sbtc on any
+
+const list = [weth, usdt, tusd, busd, susd, pax, renbtc, wbtc, hbtc, sbtc];
+>>>>>>> Stashed changes
 
 describe("OneSplit test", function () {
     this.timeout(200000);
@@ -32,353 +100,40 @@ describe("OneSplit test", function () {
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
     });
 
-    it('should work with Balancer ETH => DAI', async function () {
-        const res = await OneSplitWrap.getExpectedReturn(
-            '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-            '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-            '1000000000000000000', // 1.0
-            10,
-            DISABLE_ALL + (CURVE_ALL), // enable only Balancer
-        );
-
-        console.log('Swap: 1 ETH');
-        //console.log('returnAmount:', res.returnAmount.toString() / 1e6 + ' USDC');
-        //console.log('distribution:', res.distribution.map(a => a.toString()));
-        console.log('raw:', res.returnAmount.toString());
-        expect(res.returnAmount).to.be.bignumber.above('390000000');
-    });
-
-    const distribution = [
-        '0',  '0', '0', '0', '0',
-        '0',  '0', '0', '0', '0',
-        '10', '0', '0', '0', '0',
-        '0',  '0', '0', '0', '0',
-        '0',  '0', '0'
-    ];
-
-    // it.only('should work with ETH => CHAI', async function () {
+    async function testDexReturn(from, to) {
+        console.log(to[0]);
         
-    //     const res = await OneSplitWrap._swap(
-    //         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-    //         '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215', // CHAI
-    //         '100000000000000000000', // 100.0
-    //         '100000000000000000000', // 100.0 minReturn,
-    //         distribution,
-    //         0 // enable all
-    //     );
-
-    //     console.log('Swap: 100 ETH');
-    //     console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' CHAI');
-    //     // console.log('distribution:', res.distribution.map(a => a.toString()));
-    //     // console.log('raw:', res.returnAmount.toString());
-    // });
-
-    it('should work with Uniswap USDT => BAL', async function () {
-        const res = await OneSplitWrap.getExpectedReturn(
-            '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-            '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
-            '100000000', // 1.0
-            10,
-            DISABLE_ALL + 1, // enable only Uniswap V1
+        res = await OneSplitWrap.getExpectedReturn(
+            from[0], // From token
+            to[0], // Dest token
+            '1000000000000000000', // 1.0  // amount of from token
+            10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+            dexes // flags
         );
+        const decimal = to[2];
+        await console.log('Swap: 1', from[1]);
+        await console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
 
-        console.log('Swap: 1 USDT');
-        console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' BAL');
-        // console.log('distribution:', res.distribution.map(a => a.toString()));
-        // console.log('raw:', res.returnAmount.toString());
-        expect(res.returnAmount).to.be.bignumber.equals('0');
-    });
+        return res;
+    }
 
-    // it.only('should work with ETH => CHAI', async function () {
-    //         const res = await this.split.swap(
-    //             '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-    //             '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215', // CHAI
-    //             '100000000000000000000', // 100.0
-    //             10,
-    //             0, // enable all
-    //             { value: '100000000000000000000' }
-    //         );
+    
+    from = eth;
+    dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
-    //         console.log('Swap: 100 ETH');
-    //         console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' CHAI');
-    //         // console.log('distribution:', res.distribution.map(a => a.toString()));
-    //         // console.log('raw:', res.returnAmount.toString());
-    // });
+            it(('should work with ANY DEX and coin').toString(), () => {
+              for (var coin = 0; coin < list.length; coin++) {  
+                console.log('should work with ANY DEX and coin' + from[1] + ' => ' + list[coin][1]);
+                if (list[coin] != from) {
+                    console.log(list[coin]);
+                    const to = list[coin];
 
-    // it('should work with ETH => COMP', async function () {
-    //     const res = await this.split.getExpectedReturn(
-    //         '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-    //         '0xc00e94Cb662C3520282E6f5717214004A7f26888', // USDC
-    //         '1000000000000000000', // 1.0
-    //         1,
-    //         0,
-    //     );
+                    testDexReturn(from,to).then(result => {
+                      return expect(result.returnAmount).to.be.bignumber.above(to[3]); 
+                    })
+                }
+              }
+            });
 
-    //     console.log('Swap: 1 ETH');
-    //     console.log('returnAmount:', res.returnAmount.toString() / 1e18 + ' COMP');
-    //     // console.log('distribution:', res.distribution.map(a => a.toString()));
-    //     // console.log('raw:', res.returnAmount.toString());
-    //     expect(res.returnAmount).to.be.bignumber.above('390000000');
-    // });
+            // fill an array and then loop expects at the end
 });
-
-/*
-contract('OneSplit', function ([_, addr1]) {
-    describe('OneSplit', async function () {
-        before(async function () {
-            // let mr = await IMooniswapRegistry.at('0xEa579905818Ae70051C057e5E6aF3A5dC85745A4');
-            // let addr = await mr.pools('0x0000000000000000000000000000000000000000', '0x6B175474E89094C44Da98b954EedeAC495271d0F');
-            // let p = await IMooniswap.at(addr);
-            // console.log('p.address', addr);
-            // console.log('add', await p.getBalanceForAddition('0x0000000000000000000000000000000000000000'));
-            // console.log('rem', await p.getBalanceForRemoval('0x6B175474E89094C44Da98b954EedeAC495271d0F'));
-
-            // exit(1);
-            this.subSplitView = await OneSplitView.new();
-            this.splitView = await OneSplitViewWrap.new(this.subSplitView.address);
-
-            const subSplit = await OneSplit.new(this.splitView.address);
-            this.split = await OneSplitWrap.new(this.splitView.address, subSplit.address);
-        });
-
-        // it.only('should work with ETH => CHAI', async function () {
-        //     const res = await this.split.swap(
-        //         '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-        //         '0x06AF07097C9Eeb7fD685c692751D5C66dB49c215', // CHAI
-        //         '100000000000000000000', // 100.0
-        //         10,
-        //         0, // enable all
-        //         { value: '100000000000000000000' }
-        //     );
-
-        //     console.log('Swap: 100 ETH');
-        //     console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' CHAI');
-        //     // console.log('distribution:', res.distribution.map(a => a.toString()));
-        //     // console.log('raw:', res.returnAmount.toString());
-        // });
-
-        it('should work with ETH => COMP', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-                '0xc00e94Cb662C3520282E6f5717214004A7f26888', // USDC
-                '1000000000000000000', // 1.0
-                1,
-                0,
-            );
-
-            console.log('Swap: 1 ETH');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e18 + ' COMP');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.above('390000000');
-        });
-
-        
-
-        it('should work with DAI => mUSD', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-                '0xe2f2a5C287993345a840Db3B0845fbC70f5935a5', // mUSD
-                '2000000', // 2.0
-                1,
-                DISABLE_ALL + (web3.utils.toBN('0x20000000000')), // enable only mStable mUSD
-            );
-
-            console.log('Swap: 2 USDC');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' mUSD');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.equals('2000000000000000000');
-        });
-
-        it('should work with Bancor USDT => BAL', async function () {
-            const res = await this.subSplitView.getExpectedReturn(
-                '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-                '0xba100000625a3754423978a60c9317c58a424e3D', // BAL
-                '100000000', // 1.0
-                10,
-                DISABLE_ALL.addn(4), // enable only Bancor
-            );
-
-            console.log('Swap: 1 USDT');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' BAL');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.equals('0');
-        });
-
-        it('should work with Uniswap ETH => DAI', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-                '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-                '1000000000000000000', // 1.0
-                10,
-                DISABLE_ALL.addn(1), // enable only Uniswap V1
-            );
-
-            console.log('Swap: 1 ETH');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' WBTC');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.above('200000000000000000000');
-        });
-
-        it('should work with Kyber ETH => DAI', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-                '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-                '1000000000000000000', // 1.0
-                10,
-                DISABLE_ALL + (KYBER_ALL), // enable only Kyber
-            );
-
-            console.log('Swap: 1 ETH');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' WBTC');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.above('200000000000000000000');
-        });
-
-        it.only('should work with Kyber ETH => USDT', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', // ETH
-                '0xdAC17F958D2ee523a2206206994597C13D831ec7', // USDT
-                '50000000000000000000', // 50.0
-                10,
-                DISABLE_ALL + (KYBER_ALL), // enable only Kyber
-            );
-
-            console.log('Swap: 1 ETH');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e6 + ' USDT');
-            console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.returnAmount).to.be.bignumber.above('200000000000000000000');
-        });
-
-        it('should split among BTC Curves', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', // renBTC
-                '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // WBTC
-                '100000000000', // 1000.00
-                10,
-                DISABLE_ALL + (CURVE_ALL), // enable only all curves
-            );
-
-            console.log('Swap: 100 renBTC');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e8 + ' WBTC');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.distribution.filter(r => r.gt(new BN(0))).length).to.be.equals(2);
-        });
-
-        it('should split among USD Curves', async function () {
-            const res = await this.split.getExpectedReturn(
-                '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-                '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-                '1000000000000000000000000', // 1,000,000.00
-                4,
-                DISABLE_ALL + (CURVE_COMPOUND) + (CURVE_SYNTHETIX), // enable only all curves
-            );
-
-            console.log('Swap: 1,000,000 DAI');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e18 + ' USDC');
-            console.log('distribution:', res.distribution.map(a => a.toString()));
-            // console.log('raw:', res.returnAmount.toString());
-            expect(res.distribution.filter(r => r.gt(new BN(0))).length).to.be.above(1);
-        });
-
-        it('should work', async function () {
-            // const tx = await this.split.getExpectedReturnMock(
-            //     '0x0000000000000000000000000000000000000000',
-            //     '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
-            //     web3.utils.toWei('20'),
-            //     10
-            // );
-            const res = await this.split.getExpectedReturn(
-                '0x0000000000000000000000000000000000000000', // ETH
-                '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359', // DAI
-                web3.utils.toWei('20'),
-                10,
-                4,
-            );
-            console.log('input: 20 ETH');
-            console.log('returnAmount:', res.returnAmount.toString() / 1e18 + ' DAI');
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-
-            console.log('raw:', res.returnAmount.toString());
-        });
-
-        it('should return same input (DAI to bDAI)', async function () {
-            const inputAmount = '84';
-
-            const res = await this.split.getExpectedReturn(
-                '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-                '0x6a4FFAafa8DD400676Df8076AD6c724867b0e2e8', // bDAI
-                web3.utils.toWei(inputAmount),
-                10,
-                0,
-            );
-
-            const returnAmount = web3.utils.fromWei(res.returnAmount.toString(), 'ether');
-
-            assert.strictEqual(
-                returnAmount,
-                inputAmount,
-                'Invalid swap ratio',
-            );
-
-            console.log(`input: ${inputAmount} DAI`);
-            console.log(`returnAmount: ${returnAmount} bDAI`);
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-
-            console.log('raw:', res.returnAmount.toString());
-        });
-
-        it('should return same input (bDAI to DAI)', async function () {
-            const inputAmount = '84';
-
-            const res = await this.split.getExpectedReturn(
-                '0x6a4FFAafa8DD400676Df8076AD6c724867b0e2e8', // bDAI
-                '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-                web3.utils.toWei(inputAmount),
-                10,
-                4,
-            );
-
-            const returnAmount = web3.utils.fromWei(res.returnAmount.toString(), 'ether');
-
-            assert.strictEqual(
-                returnAmount,
-                inputAmount,
-                'Invalid swap ratio',
-            );
-
-            console.log(`input: ${inputAmount} bDAI`);
-            console.log(`returnAmount: ${returnAmount} DAI`);
-            // console.log('distribution:', res.distribution.map(a => a.toString()));
-
-            console.log('raw:', res.returnAmount.toString());
-        });
-
-        it('should give return from ETH to bDAI', async function () {
-            const inputAmount = '20';
-
-            const res = await this.split.getExpectedReturn(
-                '0x0000000000000000000000000000000000000000', // ETH
-                '0x6a4FFAafa8DD400676Df8076AD6c724867b0e2e8', // bDAI
-                web3.utils.toWei(inputAmount),
-                10,
-                4,
-            );
-
-            const returnAmount = web3.utils.fromWei(res.returnAmount.toString(), 'ether');
-
-            console.log(`input: ${inputAmount} ETH`);
-            console.log(`returnAmount: ${returnAmount} bDAI`);
-            // console.log('distributionBdai:', res.distribution.map(a => a.toString()));
-
-            console.log('raw:', res.returnAmount.toString());
-        });
-    });
-});
-*/
