@@ -90,6 +90,7 @@ describe("OneSplit test", function () {
 
     
     from = eth;
+    dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
     for (var coin = 0; coin < list.length; coin++) {
         if (list[coin] != from) {
@@ -103,7 +104,7 @@ describe("OneSplit test", function () {
                     '1000000000000000000', // 1.0  // amount of from token
                     10, // parts, higher = more granular, but effects gas usage (probably exponentially)
                     //DISABLE_ALL + (CURVE_ALL), // flag (enable only curve)
-                    FLAG_ANY,
+                    dexes,
                 );
         
                 console.log('Swap: 1', from[1]);
