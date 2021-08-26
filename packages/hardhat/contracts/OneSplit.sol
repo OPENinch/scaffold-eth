@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IOneSplit.sol";
-import "./libraries/DisableFlags.sol";
 import "./libraries/UniversalERC20.sol";
 import "./libraries/UniswapV2ExchangeLib.sol";
 import "./OneSplitRoot.sol";

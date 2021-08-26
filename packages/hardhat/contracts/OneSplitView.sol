@@ -83,15 +83,15 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             }
         }
 
-        if (!atLeastOnePositive) {
-            for (uint i = 0; i < DEXES_COUNT; i++) {
-                for (uint j = 1; j < parts + 1; j++) {
-                    if (matrix[i][j] == 0) {
-                        matrix[i][j] = VERY_NEGATIVE_VALUE;
-                    }
-                }
-            }
-        }
+        // if (!atLeastOnePositive) {
+        //     for (uint i = 0; i < DEXES_COUNT; i++) {
+        //         for (uint j = 1; j < parts + 1; j++) {
+        //             if (matrix[i][j] == 0) {
+        //                 matrix[i][j] = VERY_NEGATIVE_VALUE;
+        //             }
+        //         }
+        //     }
+        // }
 
         (, distribution) = _findBestDistribution(parts, matrix);
 
@@ -160,7 +160,8 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
                     estimateGasAmount = estimateGasAmount + (args.gases[i]);
                     int256 value = args.matrix[i][args.distribution[i]];
                     returnAmount = returnAmount.add(uint256(
-                        int256(value == VERY_NEGATIVE_VALUE ? int256(0) : value) +
+                        // true used to
+                        int256(value == int256(0) ? int256(0) : value) +
                         int256(args.gases[i].mul(args.destTokenEthPriceTimesGasPrice).div(1e18))
                     ));
                 }

@@ -37,6 +37,7 @@ import "./libraries/UniversalERC20.sol";
 import "./libraries/ChaiHelper.sol";
 import "./libraries/UniswapV2ExchangeLib.sol";
 import "./OneSplitConsts.sol";
+import "hardhat/console.sol";
 
 abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     using DisableFlags for uint256;
@@ -100,60 +101,79 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     IAaveRegistry constant internal aaveRegistry = IAaveRegistry(0xEd8b133B7B88366E01Bb9E38305Ab11c26521494);
     IBalancerHelper constant internal balancerHelper = IBalancerHelper(0xA961672E8Db773be387e775bc4937C678F3ddF9a);
 
-    int256 internal constant VERY_NEGATIVE_VALUE = -1e72;
+    //int256 internal constant VERY_NEGATIVE_VALUE = -1e72;
 
     function _findBestDistribution(
         uint256 s,                // parts
         int256[][] memory amounts // exchangesReturns
     )
         internal
-        pure
+        view
         returns(
             int256 returnAmount,
             uint256[] memory distribution
         )
     {
+        
         uint256 n = amounts.length;
 
-        int256[][] memory answer = new int256[][](n); // int[n][s+1]
+        uint256[][] memory answer = new uint256[][](n); // int[n][s+1]
         uint256[][] memory parent = new uint256[][](n); // int[n][s+1]
 
+        // initialize each subarray to be size (parts + 1)
         for (uint i = 0; i < n; i++) {
-            answer[i] = new int256[](s + 1);
+            answer[i] = new uint256[](s + 1);
             parent[i] = new uint256[](s + 1);
         }
 
+        // for each part, the first subarray is copied from amounts
+        // set all other subarrays to have -1e72
         for (uint j = 0; j <= s; j++) {
-            answer[0][j] = amounts[0][j];
+            answer[0][j] = uint256(amounts[0][j]);
             for (uint i = 1; i < n; i++) {
-                answer[i][j] = -1e72;
+                //answer[i][j] = -1e72;
+                answer[i][j] = 0;
             }
+            // the first subarray for parent will be all zeroes
             parent[0][j] = 0;
         }
 
+        // after the first subarray, there are 's' OR parts subarrays left
         for (uint i = 1; i < n; i++) {
             for (uint j = 0; j <= s; j++) {
+                // set current subarray answer to previous subarray value
                 answer[i][j] = answer[i - 1][j];
+                // set current subarray parent to the current counter value
                 parent[i][j] = j;
 
+                // go back through 's' subarrays
                 for (uint k = 1; k <= j; k++) {
-                    if (answer[i - 1][j - k] + amounts[i][k] > answer[i][j]) {
-                        answer[i][j] = answer[i - 1][j - k] + amounts[i][k];
+                    // if the previous subarray's value starting from the end
+                    // plus the amount from that exchange > what's in answer
+                    if (answer[i - 1][j - k] + uint256(amounts[i][k]) > answer[i][j]) {
+                        // take from the previous row and opposite end of the subarray
+                        // and add amounts or what was returned from the exchange
+                        answer[i][j] = answer[i - 1][j - k] + uint256(amounts[i][k]);
+                        // the parent is set to be the number of parts answer[i][j] accounts for
                         parent[i][j] = j - k;
                     }
                 }
             }
         }
 
+
         distribution = new uint256[](DEXES_COUNT);
 
         uint256 partsLeft = s;
         for (uint curExchange = n - 1; partsLeft > 0; curExchange--) {
+            console.log(curExchange);
+            console.log(partsLeft);
             distribution[curExchange] = partsLeft - parent[curExchange][partsLeft];
             partsLeft = parent[curExchange][partsLeft];
         }
 
-        returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
+        returnAmount = int256((answer[n - 1][s] == uint256(0)) ? uint256(0) : answer[n - 1][s]);
+        //returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
     }
 
     function _kyberReserveIdByTokens(
