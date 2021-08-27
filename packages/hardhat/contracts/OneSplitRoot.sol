@@ -166,8 +166,6 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
 
         uint256 partsLeft = s;
         for (uint curExchange = n - 1; partsLeft > 0; curExchange--) {
-            console.log(curExchange);
-            console.log(partsLeft);
             distribution[curExchange] = partsLeft - parent[curExchange][partsLeft];
             partsLeft = parent[curExchange][partsLeft];
         }
