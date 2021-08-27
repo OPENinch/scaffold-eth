@@ -9,6 +9,7 @@ import "./libraries/ChaiHelper.sol";
 import "./libraries/UniversalERC20.sol";
 import "./libraries/OneSplitCalculate.sol";
 import "./OneSplitRoot.sol";
+import "hardhat/console.sol";
 
 
 contract OneSplitView is IOneSplitView, OneSplitRoot {
@@ -75,7 +76,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             (rets, gases[i]) = reserves[i](fromToken, destToken, amount, parts, flags);
 
             // Prepend zero and sub gas
-            int256 gas = int256(gases[i] * destTokenEthPriceTimesGasPrice / 1e18);
+            int256 gas = int256(gases[i].mul(destTokenEthPriceTimesGasPrice).div(1e18));
             matrix[i] = new int256[](parts + 1);
             for (uint j = 0; j < rets.length; j++) {
                 matrix[i][j + 1] = int256(rets[j]) - gas;
@@ -175,10 +176,12 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
 
     function _getAllReserves(uint256 flags)
         internal
-        pure
+        //pure
+        view
         returns(function(IERC20,IERC20,uint256,uint256,uint256) view returns(uint256[] memory, uint256)[DEXES_COUNT] memory)
     {
         bool invert = flags.check(FLAG_DISABLE_ALL_SPLIT_SOURCES);
+
         return [
             invert != flags.check(FLAG_DISABLE_UNISWAP_ALL | FLAG_DISABLE_UNISWAP)            ? Calculate._NoReturn : Calculate.Uniswap,
             invert != flags.check(FLAG_DISABLE_BANCOR)                                        ? Calculate._NoReturn : Calculate.Bancor,

@@ -16,7 +16,6 @@ import "./OneSplitAave.sol";
 import "./OneSplitWeth.sol";
 import "./OneSplitMStable.sol";
 import "./OneSplitDMM.sol";
-import "./OneSplitMooniswapToken.sol";
 
 contract OneSplitWrap is 
     OneSplitBaseWrap

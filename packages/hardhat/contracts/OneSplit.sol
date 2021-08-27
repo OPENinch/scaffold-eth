@@ -139,7 +139,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
                 continue;
             }
 
-            uint256 swapAmount = amount * (distribution[i]) / (parts);
+            uint256 swapAmount = amount.mul(distribution[i]).div(parts);
             if (i == lastNonZeroIndex) {
                 swapAmount = remainingAmount;
             }
@@ -366,16 +366,6 @@ contract OneSplit is IOneSplit, OneSplitRoot {
 
         fromToken.universalApprove(address(curveSBTC), amount);
         curveSBTC.exchange(i - 1, j - 1, amount, 0);
-    }
-
-    function _swapOnDforceSwap(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 /*flags*/
-    ) internal {
-        fromToken.universalApprove(address(dforceSwap), amount);
-        dforceSwap.swap(fromToken, destToken, amount);
     }
 
     function _swapOnUniswap(
