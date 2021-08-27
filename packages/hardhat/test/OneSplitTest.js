@@ -100,34 +100,35 @@ describe("OneSplit test", function () {
             dexes // flags
         );
         const decimal = to[2];
-        await console.log('\n---------------------------------\n')
+        
         await console.log('Swap: 1', from[1]);
         await console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
+        await console.log('\n---------------------------------\n')
 
         return res;
     }
 
-    
     from = eth;
     dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
     return_values = [];
+    console.log('\n---------------------------------\n')
 
-            it(('getting DEX return values').toString(), () => {
-              for (var coin = 0; coin < list.length; coin++) {  
-                if (list[coin] != from) {
-                    const to = list[coin];
+    it(('getting DEX return values..').toString(), () => {
+        for (var coin = 0; coin < list.length; coin++) {  
+        if (list[coin] != from) {
+            const to = list[coin];
 
-                    testDexReturn(from,to).then(result => {
-                      return_values[coin] = result.returnAmount; 
-                    })
-                }
-              }
-            });
+            testDexReturn(from,to).then(result => {
+                return_values[coin] = result.returnAmount; 
+            })
+        }
+        }
+    });
 
-            for (var coin = 0; coin < list.length; coin++) { 
-                //threshold = String(list[coin][3]);
-                it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), () => {
-                   //expect(return_values[coin]).to.be.bignumber.above();
-                });
-            }
+    for (var coin = 0; coin < list.length; coin++) { 
+        //threshold = String(list[coin][3]);
+        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), () => {
+            // expect(return_values[coin]).to.be.bignumber.above(list[coin][3]);
+        });
+    }
 });
