@@ -368,16 +368,6 @@ contract OneSplit is IOneSplit, OneSplitRoot {
         curveSBTC.exchange(i - 1, j - 1, amount, 0);
     }
 
-    function _swapOnDforceSwap(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 /*flags*/
-    ) internal {
-        fromToken.universalApprove(address(dforceSwap), amount);
-        dforceSwap.swap(fromToken, destToken, amount);
-    }
-
     function _swapOnUniswap(
         IERC20 fromToken,
         IERC20 destToken,
