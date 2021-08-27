@@ -124,7 +124,6 @@ describe("OneSplit test", function () {
             }
         }
     });
-    
 
     iterations = 0;
     second = 0;

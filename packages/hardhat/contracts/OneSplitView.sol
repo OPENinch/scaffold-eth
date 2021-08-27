@@ -7,8 +7,10 @@ import "./interfaces/IOneSplitView.sol";
 import "./libraries/DisableFlags.sol";
 import "./libraries/ChaiHelper.sol";
 import "./libraries/UniversalERC20.sol";
+import "./libraries/OneSplitCalculate.sol";
 import "./OneSplitRoot.sol";
 import "hardhat/console.sol";
+
 
 contract OneSplitView is IOneSplitView, OneSplitRoot {
     using SafeMath for uint256;
@@ -130,7 +132,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         bool[DEXES_COUNT] memory exact = [
             true,  // "Uniswap",
             false, // "Bancor",
-            false, // "Oasis",
             true,  // "Curve Compound",
             true,  // "Curve USDT",
             true,  // "Curve Y",
@@ -207,18 +208,6 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_2)        ? _calculateNoReturn : calculateBalancer2,
             invert != flags.check(FLAG_DISABLE_BALANCER_ALL | FLAG_DISABLE_BALANCER_3)        ? _calculateNoReturn : calculateBalancer3
         ];
-    }
-
-    function _calculateNoGas(
-        IERC20 /*fromToken*/,
-        IERC20 /*destToken*/,
-        uint256 /*amount*/,
-        uint256 /*parts*/,
-        uint256 /*destTokenEthPriceTimesGasPrice*/,
-        uint256 /*flags*/,
-        uint256 /*destTokenEthPrice*/
-    ) internal view returns(uint256[] memory rets, uint256 gas) {
-        this;
     }
 
     // View Helpers

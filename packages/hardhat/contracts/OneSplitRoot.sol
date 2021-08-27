@@ -41,9 +41,11 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     using ChaiHelper for IChai;
 
     uint256 constant internal DEXES_COUNT = 24;
+
     IERC20 constant internal ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
     IERC20 constant internal ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000);
 
+    /// @dev we need a file that contains all constants    
     IBancorEtherToken constant internal bancorEtherToken = IBancorEtherToken(0xc0829421C1d260BD3cB3E0F06cfE2D52db2cE315);
     IWETH constant internal weth = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IChai constant internal chai = IChai(0x06AF07097C9Eeb7fD685c692751D5C66dB49c215);
