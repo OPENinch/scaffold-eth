@@ -1,7 +1,9 @@
 const { use, expect } = require("chai");
 const { solidity } = require("ethereum-waffle");
 const { ethers } = require("hardhat");
+const assert = require('assert');
 const { BN, expectRevert } = require('@openzeppelin/test-helpers');
+const { createVerify } = require("crypto");
 
 use(solidity);
 
@@ -67,9 +69,9 @@ const renbtc    = ['0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',   'RENBTC', 1e8
 const wbtc      = ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',   'WBTC',   1e8,  '600000'];    // passes eth -> wbtc on any
 const tbtc      = ['0x1bBE271d15Bb64dF0bc6CD28Df9Ff322F2eBD847',   'TBTC',   1e18, '600000'];    // fails eth -> tbtc on any
 const hbtc      = ['0x0316EB71485b0Ab14103307bf65a021042c6d380',   'HBTC',   1e18, '390000000']; // passes eth -> hbtc on any
-const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',   'SBTC',   1e18, '390000000']; // passes eth -> sbtc on any
+const sbtc      = ['0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',   'SBTC',   1e14, '390000000']; // passes eth -> sbtc on any
 
-const list = [eth, weth, usdt, tusd, busd, susd, pax, renbtc, wbtc, hbtc, sbtc];
+const list = [weth, usdt, tusd, busd, susd, pax, renbtc, wbtc, hbtc, sbtc];
 
 describe("OneSplit test", function () {
     this.timeout(200000);
@@ -88,31 +90,61 @@ describe("OneSplit test", function () {
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
     });
 
-    
+    async function testDexReturn(from, to) {
+        
+        res = await OneSplitWrap.getExpectedReturn(
+            from[0], // From token
+            to[0], // Dest token
+            '1000000000000000000', // 1.0  // amount of from token
+            10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+            dexes // flags
+        );
+        const decimal = to[2];
+        
+        await console.log('Swap: 1', from[1]);
+        await console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
+        await console.log('\n---------------------------------\n')
+
+        return res;
+    }
+
     from = eth;
     dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
+    return_values = [];
+    //console.log('\n---------------------------------\n')
+
+    it(('getting DEX return values..').toString(), () => {
+        for (var coin = 0; coin < list.length; coin++) {  
+            if (list[coin] != from) {
+                const to = list[coin];
+
+                testDexReturn(from,to).then(result => {
+                    return_values[coin] = result.returnAmount; 
+                })
+            }
+        }
+    });
+    
+
+    iterations = 0;
+    second = 0;
+    threshold = 0;
 
     for (var coin = 0; coin < list.length; coin++) {
-        if (list[coin] != from) {
-            to = list[coin];
-            decimal = to[2];
+        iterations++;
 
-            it(('should work with ANY ' + from[1] + ' => ' + to[1]).toString(), async function () {
-                const res = await OneSplitWrap.getExpectedReturn(
-                    from[0], // From token
-                    to[0], // Dest token
-                    '1000000000000000000', // 1.0  // amount of from token
-                    10, // parts, higher = more granular, but effects gas usage (probably exponentially)
-                    //DISABLE_ALL + (CURVE_ALL), // flag (enable only curve)
-                    dexes,
-                );
-        
-                console.log('Swap: 1', from[1]);
-                console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
-                // console.log('distribution:', res.distribution.map(a => a.toString()));
-                // console.log('raw:', res.returnAmount.toString());
-                expect(res.returnAmount).to.be.bignumber.above(to[3]);
-            });
-        }
+        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), () => {
+            /* THIS IS A SHITY WORKAROUND */
+            for (var coins = 0; coins <= iterations; coins++) {
+                if (coins == second) {
+                    threshold = list[second][3];
+                }
+            }
+            second++;
+            /* END SHITTY WORKAROUND */
+
+            // It can get here too fast, resulting in 'failed' tests that should have passed
+            expect(return_values[coin]).to.be.bignumber.above(threshold.toString());
+        });
     }
 });
