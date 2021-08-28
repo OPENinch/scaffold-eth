@@ -112,6 +112,7 @@ describe("OneSplit test", function () {
     dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
     return_values = [];
     //console.log('\n---------------------------------\n')
+    var testResult;
 
     it(('getting DEX return values..').toString(), () => {
         for (var coin = 0; coin < list.length; coin++) {  
@@ -133,7 +134,7 @@ describe("OneSplit test", function () {
     for (var coin = 0; coin < list.length; coin++) {
         iterations++;
 
-        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), () => {
+        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), async function() {
             /* THIS IS A SHITY WORKAROUND */
             for (var coins = 0; coins <= iterations; coins++) {
                 if (coins == second) {
@@ -144,7 +145,9 @@ describe("OneSplit test", function () {
             /* END SHITTY WORKAROUND */
 
             // It can get here too fast, resulting in 'failed' tests that should have passed
-            expect(return_values[coin]).to.be.bignumber.above(threshold.toString());
+            await return_values[coin] != null;
+            //errorMessage = from + "->" + list[coin][1] + " failed to pass check " + return_values[coin] + " > " + threshold.toString();
+            assert(expect(return_values[coin]).to.be.bignumber.above(threshold.toString()), "");
         });
     }
 });
