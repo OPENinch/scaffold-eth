@@ -27,7 +27,7 @@ describe("Oracle Test", function () {
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
     });
 
-    async function testDexReturn(from, to) {
+    async function estimateSwapAmount(from, to) {
         
         res = await OneSplitWrap.getExpectedReturn(
             from[0], // From token
@@ -37,24 +37,23 @@ describe("Oracle Test", function () {
             dexes // flags
         );
         
-        
         return res;
     }
 
     fromToken = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
-
     
     list.map(async (toToken,idx) => {
         it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-            const {returnAmount} = await testDexReturn(fromToken,toToken);
+            const {returnAmount} = await estimateSwapAmount(fromToken,toToken);
 
-            console.log('Swap: 1', fromToken[1]);
+            console.log('From token:', fromToken[1]);
+            console.log('To token:', toToken[1]);
             console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
-            console.log('assert: ' + returnAmount + ' > ' + list[idx][3]);
+            console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
             console.log('\n---------------------------------\n');
 
-            assert(returnAmount > parseInt(list[idx][3]), "errorMessage");
+            assert(returnAmount > parseInt(list[idx][3]), "Assert failed");
         });
     });
     

@@ -26,9 +26,9 @@ describe("Swap Test", function () {
         OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
 
-        await fundAccounts()
+        await fundAccounts();
     });
-    
+
     async function fundAccounts() {
         const accounts = await ethers.getSigners();
     
@@ -65,4 +65,35 @@ describe("Swap Test", function () {
           .connect(impersonatedAccountWETH)
           .transfer(user2.address, amountWeth);
       }
+
+    fromToken = Tokens.eth;
+    dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
+
+    list.map(async (toToken,idx) => {
+        it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+            const { returnAmount, distribution } = await OneSplitWrap.getExpectedReturn(
+              fromToken[0], // From token
+              toToken[0], // Dest token
+              '1000000000000000000', // 1.0  // amount of from token
+              10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+              dexes // flags
+            );
+
+            const res = await OneSplitWrap._swap(
+              fromToken[0], // From token
+              toToken[0], // Dest token
+              '1000000000000000000', // 1 * 10**18
+              returnAmount, // min return
+              distribution,
+              dexes // flags
+            );
+
+            console.log('Swap from:', fromToken[1]);
+            console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
+            console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
+            console.log('\n---------------------------------\n');
+
+        });
+    });
+    
 });
