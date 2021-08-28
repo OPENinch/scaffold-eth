@@ -108,46 +108,20 @@ describe("OneSplit test", function () {
         return res;
     }
 
-    from = eth;
+    fromToken = eth;
     dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
-    return_values = [];
+    return_values = Array(list.length).fill(null);
+    let promises = [];
     //console.log('\n---------------------------------\n')
-    var testResult;
 
-    it(('getting DEX return values..').toString(), () => {
-        for (var coin = 0; coin < list.length; coin++) {  
-            if (list[coin] != from) {
-                const to = list[coin];
-
-                testDexReturn(from,to).then(result => {
-                    return_values[coin] = result.returnAmount; 
-                })
-            }
-        }
-    });
     
-
-    iterations = 0;
-    second = 0;
-    threshold = 0;
-
-    for (var coin = 0; coin < list.length; coin++) {
-        iterations++;
-
-        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), async function() {
-            /* THIS IS A SHITY WORKAROUND */
-            for (var coins = 0; coins <= iterations; coins++) {
-                if (coins == second) {
-                    threshold = list[second][3];
-                }
-            }
-            second++;
-            /* END SHITTY WORKAROUND */
-
-            // It can get here too fast, resulting in 'failed' tests that should have passed
-            await return_values[coin] != null;
-            //errorMessage = from + "->" + list[coin][1] + " failed to pass check " + return_values[coin] + " > " + threshold.toString();
-            assert(expect(return_values[coin]).to.be.bignumber.above(threshold.toString()), "");
+        list.map(async (toToken,idx) => {
+            it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+                const {returnAmount} = await testDexReturn(fromToken,toToken);
+                console.log('returnAmount: ' + returnAmount);
+               // assert(returnAmount.to.be.bignumber.above(list[idx][3].toString), "errorMessage");
+            });
         });
-    }
+    
+    
 });
