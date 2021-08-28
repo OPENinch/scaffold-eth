@@ -456,7 +456,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
             return;
         }
     }
-
+    
     function _swapOnBancor(
         IERC20 fromToken,
         IERC20 destToken,
