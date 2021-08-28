@@ -36,52 +36,27 @@ describe("Oracle Test", function () {
             10, // parts, higher = more granular, but effects gas usage (probably exponentially)
             dexes // flags
         );
-        const decimal = to[2];
         
-        await console.log('Swap: 1', from[1]);
-        await console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
-        await console.log('\n---------------------------------\n')
-
+        
         return res;
     }
 
     from = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
-    return_values = [];
-    //console.log('\n---------------------------------\n')
+    console.log('\n---------------------------------\n')
+    
+    list.map(async (toToken,idx) => {
+        it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
 
-    it(('getting DEX return values..').toString(), () => {
-        for (var coin = 0; coin < list.length; coin++) {  
-            if (list[coin] != from) {
-                const to = list[coin];
+            const {returnAmount} = await testDexReturn(fromToken,toToken);
 
-                testDexReturn(from,to).then(result => {
-                    return_values[coin] = result.returnAmount; 
-                })
-            }
-        }
+            console.log('Swap: 1', fromToken[1]);
+            console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
+            console.log('assert: ' + returnAmount + ' > ' + list[idx][3]);
+            console.log('\n---------------------------------\n');
+
+            assert(returnAmount > parseInt(list[idx][3]), "errorMessage");
+        });
     });
     
-
-    iterations = 0;
-    second = 0;
-    threshold = 0;
-
-    for (var coin = 0; coin < list.length; coin++) {
-        iterations++;
-
-        it(('should work with ANY ' + from[1] + ' => ' + list[coin][1]).toString(), () => {
-            /* THIS IS A SHITY WORKAROUND */
-            for (var coins = 0; coins <= iterations; coins++) {
-                if (coins == second) {
-                    threshold = list[second][3];
-                }
-            }
-            second++;
-            /* END SHITTY WORKAROUND */
-
-            // It can get here too fast, resulting in 'failed' tests that should have passed
-            expect(return_values[coin]).to.be.bignumber.above(threshold.toString());
-        });
-    }
 });
