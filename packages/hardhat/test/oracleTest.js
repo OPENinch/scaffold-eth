@@ -115,11 +115,14 @@ describe("OneSplit test", function () {
     
     list.map(async (toToken,idx) => {
         it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+            
             const {returnAmount} = await testDexReturn(fromToken,toToken);
+
             console.log('Swap: 1', fromToken[1]);
             console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
             console.log('assert: ' + returnAmount + ' > ' + list[idx][3]);
             console.log('\n---------------------------------\n');
+
             assert(returnAmount > parseInt(list[idx][3]), "errorMessage");
         });
     });

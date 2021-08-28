@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IOneSplit.sol";
 import "./libraries/DisableFlags.sol";
 import "./libraries/UniversalERC20.sol";
@@ -91,7 +89,6 @@ contract OneSplit is IOneSplit, OneSplitRoot {
         function(IERC20,IERC20,uint256,uint256)[DEXES_COUNT] memory reserves = [
             _swapOnUniswap,
             _swapOnBancor,
-            _swapOnOasis,
             _swapOnCurveCompound,
             _swapOnCurveUSDT,
             _swapOnCurveY,
@@ -459,16 +456,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
             return;
         }
     }
-
-    function _swapOnNowhere(
-        IERC20 /*fromToken*/,
-        IERC20 /*destToken*/,
-        uint256 /*amount*/,
-        uint256 /*flags*/
-    ) internal {
-        revert("This source was deprecated");
-    }
-
+    
     function _swapOnBancor(
         IERC20 fromToken,
         IERC20 destToken,

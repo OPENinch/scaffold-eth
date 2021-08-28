@@ -237,7 +237,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256[] memory flagsArray = new uint256[](1);
         flagsArray[0] = flags;
 
-        swapWithReferralMulti(
+        return swapWithReferralMulti(
             tokens,
             amount,
             minReturn,
@@ -261,7 +261,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256[] memory distribution,
         uint256[] memory flags
     ) public payable returns(uint256) {
-        swapWithReferralMulti(
+        return swapWithReferralMulti(
             tokens,
             amount,
             minReturn,
