@@ -41,7 +41,7 @@ describe("Oracle Test", function () {
         return res;
     }
 
-    from = Tokens.eth;
+    fromToken = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
     console.log('\n---------------------------------\n')
     
