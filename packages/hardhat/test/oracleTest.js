@@ -101,9 +101,7 @@ describe("OneSplit test", function () {
         );
         const decimal = to[2];
         
-        await console.log('Swap: 1', from[1]);
-        await console.log('returnAmount:', res.returnAmount.toString() / decimal, to[1]);
-        await console.log('\n---------------------------------\n')
+        
 
         return res;
     }
@@ -112,16 +110,19 @@ describe("OneSplit test", function () {
     dexes = FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
     return_values = Array(list.length).fill(null);
     let promises = [];
-    //console.log('\n---------------------------------\n')
+    console.log('\n---------------------------------\n')
 
     
-        list.map(async (toToken,idx) => {
-            it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-                const {returnAmount} = await testDexReturn(fromToken,toToken);
-                console.log('returnAmount: ' + returnAmount);
-               // assert(returnAmount.to.be.bignumber.above(list[idx][3].toString), "errorMessage");
-            });
+    list.map(async (toToken,idx) => {
+        it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+            const {returnAmount} = await testDexReturn(fromToken,toToken);
+            console.log('Swap: 1', fromToken[1]);
+            console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
+            console.log('assert: ' + returnAmount + ' > ' + list[idx][3]);
+            console.log('\n---------------------------------\n');
+            assert(returnAmount > parseInt(list[idx][3]), "errorMessage");
         });
+    });
     
     
 });
