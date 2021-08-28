@@ -43,7 +43,7 @@ describe("Oracle Test", function () {
 
     fromToken = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
-    console.log('\n---------------------------------\n')
+
     
     list.map(async (toToken,idx) => {
         it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
