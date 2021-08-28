@@ -76,7 +76,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             (rets, gases[i]) = reserves[i](fromToken, destToken, amount, parts, flags);
 
             // Prepend zero and sub gas
-            int256 gas = int256(gases[i].mul(destTokenEthPriceTimesGasPrice).div(1e18));
+            int256 gas = int256(gases[i] * destTokenEthPriceTimesGasPrice / 1e18);
             matrix[i] = new int256[](parts + 1);
             for (uint j = 0; j < rets.length; j++) {
                 matrix[i][j + 1] = int256(rets[j]) - gas;

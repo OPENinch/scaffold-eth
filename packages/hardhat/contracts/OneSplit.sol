@@ -139,7 +139,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
                 continue;
             }
 
-            uint256 swapAmount = amount.mul(distribution[i]).div(parts);
+            uint256 swapAmount = amount * (distribution[i]) / (parts);
             if (i == lastNonZeroIndex) {
                 swapAmount = remainingAmount;
             }
