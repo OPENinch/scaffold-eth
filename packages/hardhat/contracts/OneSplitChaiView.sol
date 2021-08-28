@@ -53,9 +53,9 @@ abstract contract OneSplitChaiView is OneSplitViewWrapBase {
                     amount,
                     parts,
                     flags,
-                    destTokenEthPriceTimesGasPrice.mul(1e18).div(price)
+                    destTokenEthPriceTimesGasPrice * (1e18) / (price)
                 );
-                return (returnAmount.mul(price).div(1e18), estimateGasAmount + 168_000, distribution);
+                return (returnAmount * (price) / (1e18), estimateGasAmount + 168_000, distribution);
             }
         }
 
