@@ -8,7 +8,8 @@ const { Flags, Tokens, ERC20_ABI } = require("./constants");
 
 use(solidity);
 
-const list = [Tokens.weth, Tokens.usdt, Tokens.tusd, Tokens.busd, Tokens.susd, Tokens.pax, Tokens.renbtc, Tokens.wbtc, Tokens.hbtc, Tokens.sbtc];
+//const list = [Tokens.weth, Tokens.usdt, Tokens.tusd, Tokens.busd, Tokens.susd, Tokens.pax, Tokens.renbtc, Tokens.wbtc, Tokens.hbtc, Tokens.sbtc];
+const list = [Tokens.weth, Tokens.wbtc, Tokens.usdt, Tokens.dai];
 
 describe("Swap Test", function () {
     this.timeout(200000);
@@ -38,6 +39,7 @@ describe("Swap Test", function () {
         await ethers.provider.send("hardhat_impersonateAccount", [
           "0x7641a5E890478Bea2bdC4CAFfF960AC4ae96886e",
         ]);
+
         const impersonatedAccountDAI = await ethers.provider.getSigner(
           "0x7641a5E890478Bea2bdC4CAFfF960AC4ae96886e"
         );
@@ -66,7 +68,7 @@ describe("Swap Test", function () {
           .transfer(user2.address, amountWeth);
       }
 
-    fromToken = Tokens.eth;
+    fromToken = Tokens.weth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
     list.map(async (toToken,idx) => {

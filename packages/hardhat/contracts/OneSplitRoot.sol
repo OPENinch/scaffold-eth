@@ -121,6 +121,7 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
             parent[0][j] = 0;
         }
 
+        // kick out any value of the 'parent' array which is zero
         for (uint i = 1; i < n; i++) {
             for (uint j = 0; j <= s; j++) {
                 answer[i][j] = answer[i - 1][j];
@@ -138,12 +139,13 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
         distribution = new uint256[](DEXES_COUNT);
 
         uint256 partsLeft = s;
-        for (uint curExchange = n - 1; partsLeft > 0; curExchange--) {
+        for (uint curExchange = n - 1; partsLeft > 0 && curExchange > 0; curExchange--) {
             distribution[curExchange] = partsLeft - parent[curExchange][partsLeft];
             partsLeft = parent[curExchange][partsLeft];
         }
 
-        returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
+        //returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
+        returnAmount = answer[n - 1][s];
     }
 
     function _scaleDestTokenEthPriceTimesGasPrice(
