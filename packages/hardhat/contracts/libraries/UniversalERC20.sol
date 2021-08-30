@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "hardhat/console.sol";
 
 library UniversalERC20 {
 
@@ -31,7 +32,10 @@ library UniversalERC20 {
             return;
         }
 
+        return;
+
         if (isETH(token)) {
+            console.log(msg.value);
             require(from == msg.sender && msg.value >= amount, "Wrong useage of ETH.universalTransferFrom()");
             if (to != address(this)) {
                 payable(to).transfer(amount);

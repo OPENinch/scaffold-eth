@@ -66,7 +66,7 @@ describe("Swap Test", function () {
           .transfer(user2.address, amountWeth);
       }
 
-    fromToken = Tokens.eth;
+    fromToken = Tokens.weth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
     list.map(async (toToken,idx) => {

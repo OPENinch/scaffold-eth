@@ -148,9 +148,11 @@ contract OneSplitWrap is
         _swap(fromToken, destToken, confirmed, distribution, flags);
 
         returnAmount = destToken.universalBalanceOf(address(this));
-        require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
-        destToken.universalTransfer(msg.sender, returnAmount);
-        fromToken.universalTransfer(msg.sender, fromToken.universalBalanceOf(address(this)));
+        console.log(minReturn);
+        console.log(returnAmount);
+        //require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
+        //destToken.universalTransfer(msg.sender, returnAmount);
+        //fromToken.universalTransfer(msg.sender, fromToken.universalBalanceOf(address(this)));
     }
 
     function swapMulti(
@@ -184,8 +186,8 @@ contract OneSplitWrap is
             tokens[i - 1].universalTransfer(msg.sender, tokens[i - 1].universalBalanceOf(address(this)));
         }
 
-        require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
-        tokens[tokens.length - 1].universalTransfer(msg.sender, returnAmount);
+        //require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
+        //tokens[tokens.length - 1].universalTransfer(msg.sender, returnAmount);
     }
 
     function _swapFloor(

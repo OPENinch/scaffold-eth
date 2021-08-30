@@ -138,7 +138,7 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
         distribution = new uint256[](DEXES_COUNT);
 
         uint256 partsLeft = s;
-        for (uint curExchange = n - 1; partsLeft > 0; curExchange--) {
+        for (uint curExchange = n - 1; partsLeft > 0 && curExchange > 0; curExchange--) {
             distribution[curExchange] = partsLeft - parent[curExchange][partsLeft];
             partsLeft = parent[curExchange][partsLeft];
         }
