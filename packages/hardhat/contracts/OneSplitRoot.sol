@@ -33,6 +33,7 @@ import "./libraries/ChaiHelper.sol";
 import "./libraries/UniswapV2ExchangeLib.sol";
 import "./OneSplitConsts.sol";
 
+//TODO: this contract is redundant
 abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
     using DisableFlags for uint256;
     using UniversalERC20 for IERC20;

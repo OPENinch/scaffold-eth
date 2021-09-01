@@ -16,10 +16,17 @@ describe("Swap Test", function () {
     before(async () => {
         [user1, user2, ...addrs] = await ethers.getSigners();
 
+        //const OneSplitAuditDeployment = await ethers.getContractFactory("OneSplitAudit");
+
+
         const OneSplitViewDeployment = await ethers.getContractFactory("OneSplitView");
         const OneSplitViewWrapDeployment = await ethers.getContractFactory('OneSplitViewWrap');
         const OneSplitDeployment = await ethers.getContractFactory('OneSplit');
         const OneSplitWrapDeployment = await ethers.getContractFactory('OneSplitWrap');
+
+
+        //OneSplitAudit = await OneSplitAuditDeployment.deploy();
+
 
         OneSplitView = await OneSplitViewDeployment.deploy();
         OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
@@ -70,30 +77,35 @@ describe("Swap Test", function () {
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
     list.map(async (toToken,idx) => {
-        it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-            const { returnAmount, distribution } = await OneSplitWrap.getExpectedReturn(
-              fromToken[0], // From token
-              toToken[0], // Dest token
-              '1000000000000000000', // 1.0  // amount of from token
-              10, // parts, higher = more granular, but effects gas usage (probably exponentially)
-              dexes // flags
-            );
+        if (fromToken[1] != list[idx][1]) {
+            it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+                const { returnAmount, distribution } = await OneSplitWrap.getExpectedReturn(
+                    fromToken[0], // From token
+                    toToken[0], // Dest token
+                    '1000000000000000000', // 1.0  // amount of from token
+                    1, // parts, higher = more granular, but effects gas usage (probably exponentially)
+                    dexes // flags
+                );
 
-            const res = await OneSplitWrap._swap(
-              fromToken[0], // From token
-              toToken[0], // Dest token
-              '1000000000000000000', // 1 * 10**18
-              returnAmount, // min return
-              distribution,
-              dexes // flags
-            );
+                const res = await OneSplitWrap.swap(
+                    fromToken[0], // From token
+                    toToken[0], // Dest token
+                    '1000000000000000000', // 1 * 10**18
+                    0,
+                    //returnAmount * 0.9, // min return
+                    distribution,
+                    dexes // flags
+                );
 
-            console.log('Swap from:', fromToken[1]);
-            console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
-            console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
-            console.log('\n---------------------------------\n');
+                console.log('Finished Swap');
 
-        });
+                console.log('Swap from:', fromToken[1]);
+                console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
+                console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
+                console.log('\n---------------------------------\n');
+
+            });
+        }
     });
     
 });

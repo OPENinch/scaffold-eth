@@ -8,6 +8,10 @@ import "./OneSplitViewWrapBase.sol";
 abstract contract OneSplitMStableView is OneSplitViewWrapBase {
     using DisableFlags for uint256;
 
+/*TODO: why does this getExpectedReturnWithGas function not work like the others?
+ * what is point in remapping getExpectedReturnWithGas to point into a different function
+ * rather than the method shown here
+ */
     function getExpectedReturnWithGas(
         IERC20 fromToken,
         IERC20 destToken,

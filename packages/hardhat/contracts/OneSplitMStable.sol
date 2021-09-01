@@ -14,6 +14,10 @@ abstract contract OneSplitMStable is OneSplitBaseWrap {
 
     using UniversalERC20 for IERC20;
 
+/*TODO: why does this _swap function not work like the others?
+ * what is point in remapping _swap to point into a different function
+ * rather than the method shown here
+ */
     function _swap(
         IERC20 fromToken,
         IERC20 destToken,

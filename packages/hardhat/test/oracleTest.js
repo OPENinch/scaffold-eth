@@ -33,7 +33,7 @@ describe("Oracle Test", function () {
             from[0], // From token
             to[0], // Dest token
             '1000000000000000000', // 1.0  // amount of from token
-            10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+            1, // parts, higher = more granular, but effects gas usage (probably exponentially)
             dexes // flags
         );
         
