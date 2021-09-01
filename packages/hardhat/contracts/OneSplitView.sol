@@ -8,11 +8,9 @@ import "./libraries/DisableFlags.sol";
 import "./libraries/ChaiHelper.sol";
 import "./libraries/UniversalERC20.sol";
 import "./libraries/OneSplitCalculate.sol";
-import "./OneSplitRoot.sol";
-import "hardhat/console.sol";
+import "./OneSplitConsts.sol";
 
-
-contract OneSplitView is IOneSplitView, OneSplitRoot {
+contract OneSplitView is IOneSplitView, OneSplitConsts{
     using SafeMath for uint256;
     using DisableFlags for uint256;
 
@@ -26,7 +24,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 amount,
         uint256 parts,
         uint256 flags // See constants in IOneSplit.sol
-    ) override
+    ) virtual override
         public
         view
         returns(
@@ -51,7 +49,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         uint256 parts,
         uint256 flags, // See constants in IOneSplit.sol
         uint256 destTokenEthPriceTimesGasPrice
-    ) override
+    ) virtual override
         public
         view
         returns(
@@ -111,6 +109,60 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             })
         );
         return (returnAmount, estimateGasAmount, distribution);
+    }
+
+    function _findBestDistribution(
+        uint256 s,                // parts
+        int256[][] memory amounts // exchangesReturns
+    )
+        internal
+        pure
+        returns(
+            int256 returnAmount,
+            uint256[] memory distribution
+        )
+    {
+        uint256 n = amounts.length;
+
+        int256[][] memory answer = new int256[][](n); // int[n][s+1]
+        uint256[][] memory parent = new uint256[][](n); // int[n][s+1]
+
+        for (uint i = 0; i < n; i++) {
+            answer[i] = new int256[](s + 1);
+            parent[i] = new uint256[](s + 1);
+        }
+
+        for (uint j = 0; j <= s; j++) {
+            answer[0][j] = amounts[0][j];
+            for (uint i = 1; i < n; i++) {
+                answer[i][j] = -1e72;
+            }
+            parent[0][j] = 0;
+        }
+
+        for (uint i = 1; i < n; i++) {
+            for (uint j = 0; j <= s; j++) {
+                answer[i][j] = answer[i - 1][j];
+                parent[i][j] = j;
+
+                for (uint k = 1; k <= j; k++) {
+                    if (answer[i - 1][j - k] + amounts[i][k] > answer[i][j]) {
+                        answer[i][j] = answer[i - 1][j - k] + amounts[i][k];
+                        parent[i][j] = j - k;
+                    }
+                }
+            }
+        }
+
+        distribution = new uint256[](DEXES_COUNT);
+
+        uint256 partsLeft = s;
+        for (uint curExchange = n - 1; partsLeft > 0 && curExchange > 0; curExchange--) {
+            distribution[curExchange] = partsLeft - parent[curExchange][partsLeft];
+            partsLeft = parent[curExchange][partsLeft];
+        }
+
+        returnAmount = (answer[n - 1][s] == VERY_NEGATIVE_VALUE) ? int256(0) : answer[n - 1][s];
     }
 
     struct Args {

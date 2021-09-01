@@ -5,7 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../interfaces/IOneSplitView.sol";
 import "../interfaces/ICurve.sol";
 import "../OneSplitWethView.sol";
-import "../OneSplitRoot.sol";
+import "./UniversalERC20.sol";
+import "./ChaiHelper.sol";
 
 library Calculate {
     using UniversalERC20 for IERC20;
@@ -111,19 +112,6 @@ library Calculate {
         for (uint256 i = 0; i < parts; i++) {
             rets[i] = (value * (i + 1)) / (parts);
         }
-    }
-
-//TODO: this is never used anywhere
-    function _noGas(
-        IERC20, /*fromToken*/
-        IERC20, /*destToken*/
-        uint256, /*amount*/
-        uint256, /*parts*/
-        uint256, /*destTokenEthPriceTimesGasPrice*/
-        uint256, /*flags*/
-        uint256 /*destTokenEthPrice*/
-    ) internal view returns (uint256[] memory rets, uint256 gas) {
-        this;
     }
 
     function _Balancer(

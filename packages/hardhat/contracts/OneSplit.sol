@@ -5,9 +5,9 @@ import "./interfaces/IOneSplit.sol";
 import "./libraries/DisableFlags.sol";
 import "./libraries/UniversalERC20.sol";
 import "./libraries/UniswapV2ExchangeLib.sol";
-import "./OneSplitRoot.sol";
+import "./OneSplitConsts.sol";
 
-contract OneSplit is IOneSplit, OneSplitRoot {
+contract OneSplit is IOneSplit, OneSplitConsts {
 
     using SafeMath for uint256;
     using UniversalERC20 for IERC20;
@@ -30,7 +30,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
         uint256 amount,
         uint256 parts,
         uint256 flags
-    ) override(IOneSplitView, IOneSplit)
+    ) override
         public
         view
         returns(
@@ -55,7 +55,7 @@ contract OneSplit is IOneSplit, OneSplitRoot {
         uint256 parts,
         uint256 flags,
         uint256 destTokenEthPriceTimesGasPrice
-    ) override(IOneSplit, IOneSplitView)
+    ) override
         public
         view
         returns(

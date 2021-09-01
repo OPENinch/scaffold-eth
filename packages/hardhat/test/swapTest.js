@@ -63,17 +63,17 @@ describe("Swap Test", function () {
         const impersonatedAccountWETH = await ethers.provider.getSigner(
           "0x6555e1CC97d3cbA6eAddebBCD7Ca51d75771e0B8"
         );
-    
+
         const amountWeth = ethers.utils.parseUnits("100.0", 18);
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user1.address, amountWeth);
-        await weth.approve(OneSplitWrap.address, amountWeth);
+        await weth.connect(user1).approve(OneSplitWrap.address, amountWeth);
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user2.address, amountWeth);
-        await weth.approve(OneSplitWrap.address, amountWeth);
-      }
+        await weth.connect(user2).approve(OneSplitWrap.address, amountWeth);
+    }
 
     fromToken = Tokens.weth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */

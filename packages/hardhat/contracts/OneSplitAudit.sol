@@ -51,7 +51,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
     using UniversalERC20 for IERC20;
     using Array for IERC20[];
 
-    IWETH constant internal weth = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+    //IWETH constant internal weth = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IFreeFromUpTo public constant chi = IFreeFromUpTo(0x0000000000004946c0e9F43F4Dee607b0eF1fA1c);
 
     IOneSplitMulti public oneSplitImpl;

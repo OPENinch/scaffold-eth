@@ -16,10 +16,11 @@ import "./OneSplitAave.sol";
 import "./OneSplitWeth.sol";
 import "./OneSplitMStable.sol";
 import "./OneSplitDMM.sol";
-//import "hardhat/console.sol";
+import "./OneSplitView.sol";
 
 contract OneSplitWrap is 
-    OneSplitBaseWrap
+    OneSplitBaseWrap,
+    OneSplitView
 {
     using SafeMath for uint256;
     using UniversalERC20 for IERC20;
@@ -76,7 +77,7 @@ contract OneSplitWrap is
             uint256 estimateGasAmount,
             uint256[] memory distribution
         )
-    {/* Note: this did return oneSplitView. */
+    {
         return oneSplitView.getExpectedReturnWithGas(
             fromToken,
             destToken,
