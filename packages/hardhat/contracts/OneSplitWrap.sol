@@ -17,10 +17,12 @@ import "./OneSplitWeth.sol";
 import "./OneSplitMStable.sol";
 import "./OneSplitDMM.sol";
 import "./OneSplitView.sol";
+import "./interfaces/IOneSplitMulti.sol";
 
 contract OneSplitWrap is 
     OneSplitBaseWrap,
-    OneSplitView
+    OneSplitView,
+    IOneSplitMulti //TODO: is this correct? added here due to removing OneSplitRoot - OneSplitAudit swap function traceses back to IOneSplitMulti.swapMulti() this is the only other contract that defines swapMulti
 {
     using SafeMath for uint256;
     using UniversalERC20 for IERC20;
@@ -44,7 +46,7 @@ contract OneSplitWrap is
         uint256 amount,
         uint256 parts,
         uint256 flags
-    ) override
+    ) override(IOneSplit, OneSplitView)
         public
         view
         returns(
@@ -69,7 +71,7 @@ contract OneSplitWrap is
         uint256 parts,
         uint256 flags,
         uint256 destTokenEthPriceTimesGasPrice
-    ) override
+    ) override(IOneSplit, OneSplitView)
         public
         view
         returns(
@@ -94,7 +96,7 @@ contract OneSplitWrap is
         uint256[] memory parts,
         uint256[] memory flags,
         uint256[] memory destTokenEthPriceTimesGasPrices
-    )
+    ) override
         public
         view
         returns(
@@ -144,7 +146,7 @@ contract OneSplitWrap is
         uint256 minReturn,
         uint256[] memory distribution,
         uint256 flags
-    ) public payable returns(uint256 returnAmount) {
+    ) override public payable returns(uint256 returnAmount) {
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
         uint256 confirmed = fromToken.universalBalanceOf(address(this));
         _swap(fromToken, destToken, confirmed, distribution, flags);
@@ -161,7 +163,7 @@ contract OneSplitWrap is
         uint256 minReturn,
         uint256[] memory distribution,
         uint256[] memory flags
-    ) public payable returns(uint256 returnAmount) {
+    ) override public payable returns(uint256 returnAmount) {
         tokens[0].universalTransferFrom(msg.sender, address(this), amount);
 
         returnAmount = tokens[0].universalBalanceOf(address(this));

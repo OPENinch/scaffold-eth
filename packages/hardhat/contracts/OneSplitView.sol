@@ -228,8 +228,7 @@ contract OneSplitView is IOneSplitView, OneSplitConsts{
 
     function _getAllReserves(uint256 flags)
         internal
-        //pure
-        view
+        pure
         returns(function(IERC20,IERC20,uint256,uint256,uint256) view returns(uint256[] memory, uint256)[DEXES_COUNT] memory)
     {
         bool invert = flags.check(FLAG_DISABLE_ALL_SPLIT_SOURCES);

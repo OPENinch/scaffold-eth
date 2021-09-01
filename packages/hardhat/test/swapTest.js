@@ -85,7 +85,7 @@ describe("Swap Test", function () {
                     fromToken[0], // From token
                     toToken[0], // Dest token
                     '1000000000000000000', // 1.0  // amount of from token
-                    1, // parts, higher = more granular, but effects gas usage (probably exponentially)
+                    10, // parts, higher = more granular, but effects gas usage (probably exponentially)
                     dexes // flags
                 );
 

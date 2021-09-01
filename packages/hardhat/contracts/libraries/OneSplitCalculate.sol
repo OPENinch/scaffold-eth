@@ -813,7 +813,7 @@ library Calculate {
         uint256, /*amount*/
         uint256 parts,
         uint256 /*flags*/
-    ) internal view returns (uint256[] memory rets, uint256 gas) {
+    ) internal pure returns (uint256[] memory rets, uint256 gas) {
         return (new uint256[](parts), 0);
         // IBancorNetwork bancorNetwork = IBancorNetwork(bancorContractRegistry.addressOf("BancorNetwork"));
 
