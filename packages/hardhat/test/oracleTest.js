@@ -40,21 +40,21 @@ describe("Oracle Test", function () {
         return res;
     }
 
-    fromToken = Tokens.eth;
+    fromToken = Tokens.weth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
     
-    list.map(async (toToken,idx) => {
-        it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-            const {returnAmount} = await estimateSwapAmount(fromToken,toToken);
+    // list.map(async (toToken,idx) => {
+    //     it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
+    //         const {returnAmount} = await estimateSwapAmount(fromToken,toToken);
 
-            console.log('From token:', fromToken[1]);
-            console.log('To token:', toToken[1]);
-            console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
-            console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
-            console.log('\n---------------------------------\n');
+    //         console.log('From token:', fromToken[1]);
+    //         console.log('To token:', toToken[1]);
+    //         console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
+    //         console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
+    //         console.log('\n---------------------------------\n');
 
-            assert(returnAmount > parseInt(list[idx][3]), "Assert failed");
-        });
-    });
+    //         assert(returnAmount > parseInt(list[idx][3]), "Assert failed");
+    //     });
+    // });
     
 });

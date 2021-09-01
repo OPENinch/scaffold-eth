@@ -144,6 +144,8 @@ contract OneSplit is IOneSplit, OneSplitRoot {
                 swapAmount = remainingAmount;
             }
             remainingAmount -= swapAmount;
+            console.log('swapAmount');
+            console.log(swapAmount);
             reserves[i](fromToken, destToken, swapAmount, flags);
         }
 

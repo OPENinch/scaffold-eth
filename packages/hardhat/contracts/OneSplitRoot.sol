@@ -103,32 +103,49 @@ abstract contract OneSplitRoot is IOneSplitView, OneSplitConsts {
             uint256[] memory distribution
         )
     {
-        uint256 n = amounts.length;
+        uint256 n = amounts.length; // number of exchanges
 
         int256[][] memory answer = new int256[][](n); // int[n][s+1]
         uint256[][] memory parent = new uint256[][](n); // int[n][s+1]
-
+        
+        // each array is parts + 1
         for (uint i = 0; i < n; i++) {
             answer[i] = new int256[](s + 1);
             parent[i] = new uint256[](s + 1);
         }
 
+        // for each part 
         for (uint j = 0; j <= s; j++) {
+            // why is the 0 index important?
+            // is it because this is the preferred index?
             answer[0][j] = amounts[0][j];
+            //set all other rows and columns to VERY_NEGATIVE_VALUE
             for (uint i = 1; i < n; i++) {
                 answer[i][j] = -1e72;
             }
+            // set the first row to all zeroes
             parent[0][j] = 0;
         }
 
+        
         for (uint i = 1; i < n; i++) {
             for (uint j = 0; j <= s; j++) {
+                //copy the answer from the previous row
+                // this will be used by default
                 answer[i][j] = answer[i - 1][j];
+                //number the whole row based on the column index
                 parent[i][j] = j;
 
+                
                 for (uint k = 1; k <= j; k++) {
+                    //if the answer in the previous row and opposite sided column is gt
+                    // the current row and j value
                     if (answer[i - 1][j - k] + amounts[i][k] > answer[i][j]) {
+                        // set this element to be the previous row and opposite side column
+                        // plus the amount from that exchange
                         answer[i][j] = answer[i - 1][j - k] + amounts[i][k];
+                        // parent element will be the column number difference between the two
+                        // I believe this will be split into X number of parts
                         parent[i][j] = j - k;
                     }
                 }

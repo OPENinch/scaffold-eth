@@ -40,7 +40,7 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
             amount,
             parts,
             flags,
-            0
+            0 //why is it always passing zero?
         );
     }
 
@@ -71,19 +71,44 @@ contract OneSplitView is IOneSplitView, OneSplitRoot {
         int256[][] memory matrix = new int256[][](DEXES_COUNT);
         uint256[DEXES_COUNT] memory gases;
         bool atLeastOnePositive = false;
+
         for (uint i = 0; i < DEXES_COUNT; i++) {
             uint256[] memory rets;
+
+            // @dev rets is how much I get back from each exchange
+            // @dev the gas 
             (rets, gases[i]) = reserves[i](fromToken, destToken, amount, parts, flags);
 
+            //console.log('gases[i]');
+            //console.log(gases[i]);
+
             // Prepend zero and sub gas
+            // gas always come back zero
             int256 gas = int256(gases[i] * destTokenEthPriceTimesGasPrice / 1e18);
+            //console.log('gas');
+            //console.log(uint256(gas));
             matrix[i] = new int256[](parts + 1);
             for (uint j = 0; j < rets.length; j++) {
+                // set the entire row to be the return from Uniswap or other DEX
+                // gas is always ZERO (check line 43)
+                
+                // if(rets[j] > 0){
+                //     console.log('i');
+                //     console.log(i);
+                //     console.log('j');
+                //     console.log(j);
+                //     console.log(rets[j]);
+                //     console.log(matrix[i][j+1]);
+                // }
+                // all the returns are shifted right
+                // the zero index is empty for j
                 matrix[i][j + 1] = int256(rets[j]) - gas;
+                // this boolean checks if we got at least one return value from all DEXes
                 atLeastOnePositive = atLeastOnePositive || (matrix[i][j + 1] > 0);
             }
         }
 
+        // if we didn't get any return values, set everything to be negative
         if (!atLeastOnePositive) {
             for (uint i = 0; i < DEXES_COUNT; i++) {
                 for (uint j = 1; j < parts + 1; j++) {

@@ -32,11 +32,8 @@ library UniversalERC20 {
             return;
         }
 
-        return;
-
         if (isETH(token)) {
-            console.log(msg.value);
-            require(from == msg.sender && msg.value >= amount, "Wrong useage of ETH.universalTransferFrom()");
+            //require(from == msg.sender, "Wrong useage of ETH.universalTransferFrom()");
             if (to != address(this)) {
                 payable(to).transfer(amount);
             }
@@ -64,19 +61,21 @@ library UniversalERC20 {
     }
 
     function universalApprove(IERC20 token, address to, uint256 amount) internal {
-        if (!isETH(token)) {
-            if (amount == 0) {
-                token.safeApprove(to, 0);
-                return;
-            }
+        console.log('amount to approve');
+        console.log(amount);
+        if (amount == 0) {
+            token.safeApprove(to, 0);
+            return;
+        }
 
-            uint256 allowance = token.allowance(address(this), to);
-            if (allowance < amount) {
-                if (allowance > 0) {
-                    token.safeApprove(to, 0);
-                }
-                token.safeApprove(to, amount);
+        uint256 allowance = token.allowance(address(this), to);
+        if (allowance < amount) {
+            if (allowance > 0) {
+                token.safeApprove(to, 0);
             }
+            token.safeApprove(to, amount);
+            console.log('allowance after safeApprove');
+            console.log(token.allowance(address(this),to));
         }
     }
 

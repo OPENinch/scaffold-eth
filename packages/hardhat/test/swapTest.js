@@ -64,6 +64,11 @@ describe("Swap Test", function () {
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user2.address, amountWeth);
+
+        let balance1 = await ethers.provider.getBalance(user1.address);
+        let balance2 = await ethers.provider.getBalance(user2.address);
+        console.log('user1 balance: ' + balance1);
+        console.log('user2 balance: ' + balance2);
       }
 
     fromToken = Tokens.weth;
@@ -78,6 +83,8 @@ describe("Swap Test", function () {
               10, // parts, higher = more granular, but effects gas usage (probably exponentially)
               dexes // flags
             );
+
+            console.log('returnAmount: ' + returnAmount);
 
             const res = await OneSplitWrap._swap(
               fromToken[0], // From token

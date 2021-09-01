@@ -143,13 +143,18 @@ contract OneSplitWrap is
         uint256[] memory distribution,
         uint256 flags
     ) public payable returns(uint256 returnAmount) {
+        fromToken.universalApprove(address(this), amount);
+        console.log('allowance after approve');
+        console.log(fromToken.allowance(msg.sender,address(this)));
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
+        console.log('transfer');
         uint256 confirmed = fromToken.universalBalanceOf(address(this));
         _swap(fromToken, destToken, confirmed, distribution, flags);
 
         returnAmount = destToken.universalBalanceOf(address(this));
-        console.log(minReturn);
-        console.log(returnAmount);
+        console.log('swap completed');
+        //console.log(minReturn);
+        //console.log(returnAmount);
         //require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
         //destToken.universalTransfer(msg.sender, returnAmount);
         //fromToken.universalTransfer(msg.sender, fromToken.universalBalanceOf(address(this)));
@@ -185,6 +190,8 @@ contract OneSplitWrap is
             returnAmount = tokens[i].universalBalanceOf(address(this));
             tokens[i - 1].universalTransfer(msg.sender, tokens[i - 1].universalBalanceOf(address(this)));
         }
+
+        //console.log('swapMulti');
 
         //require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
         //tokens[tokens.length - 1].universalTransfer(msg.sender, returnAmount);
