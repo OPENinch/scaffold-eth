@@ -68,9 +68,11 @@ describe("Swap Test", function () {
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user1.address, amountWeth);
+        await weth.approve(OneSplitWrap.address, amountWeth);
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user2.address, amountWeth);
+        await weth.approve(OneSplitWrap.address, amountWeth);
       }
 
     fromToken = Tokens.weth;
