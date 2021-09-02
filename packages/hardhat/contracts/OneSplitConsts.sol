@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IOneSplit.sol";
-import "./interfaces/IOneSplitMulti.sol";
 import "./interfaces/IBancorNetwork.sol";
 import "./interfaces/IBancorContractRegistry.sol";
 import "./interfaces/IBancorNetworkPathFinder.sol";

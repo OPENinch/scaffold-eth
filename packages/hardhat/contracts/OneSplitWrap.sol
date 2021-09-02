@@ -17,12 +17,12 @@ import "./OneSplitWeth.sol";
 import "./OneSplitMStable.sol";
 import "./OneSplitDMM.sol";
 import "./OneSplitView.sol";
-import "./interfaces/IOneSplitMulti.sol";
+import "./interfaces/IOneSplit.sol";
 
 contract OneSplitWrap is 
     OneSplitBaseWrap,
     OneSplitView,
-    IOneSplitMulti //TODO: is this correct? added here due to removing OneSplitRoot - OneSplitAudit swap function traceses back to IOneSplitMulti.swapMulti() this is the only other contract that defines swapMulti
+    IOneSplit //TODO: is this correct? added here due to removing OneSplitRoot - OneSplitAudit swap function traceses back to IOneSplitMulti.swapMulti() this is the only other contract that defines swapMulti
 {
     using SafeMath for uint256;
     using UniversalERC20 for IERC20;

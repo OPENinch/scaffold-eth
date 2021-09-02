@@ -54,7 +54,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
     //IWETH constant internal weth = IWETH(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
     IFreeFromUpTo public constant chi = IFreeFromUpTo(0x0000000000004946c0e9F43F4Dee607b0eF1fA1c);
 
-    IOneSplitMulti public oneSplitImpl;
+    IOneSplit public oneSplitImpl;
 
     event ImplementationUpdated(address indexed newImpl);
 
@@ -70,7 +70,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256 feePercent
     );
 
-    constructor(IOneSplitMulti impl) {
+    constructor(IOneSplit impl) {
         setNewImpl(impl);
     }
 
@@ -78,7 +78,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         revert("OneSplit: do not send ETH directly");
     }
 
-    function setNewImpl(IOneSplitMulti impl) public onlyOwner {
+    function setNewImpl(IOneSplit impl) public onlyOwner {
         oneSplitImpl = impl;
         emit ImplementationUpdated(address(impl));
     }
