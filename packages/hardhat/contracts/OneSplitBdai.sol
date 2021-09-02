@@ -8,8 +8,9 @@ import "./libraries/DisableFlags.sol";
 import "./libraries/UniversalERC20.sol";
 import "./OneSplitBaseWrap.sol";
 import "./OneSplitBdaiBase.sol";
+import "./OneSplitView.sol";
 
-abstract contract OneSplitBdai is OneSplitBaseWrap, OneSplitBdaiBase {
+abstract contract OneSplitBdai is OneSplitBaseWrap, OneSplitView, OneSplitBdaiBase {
     using DisableFlags for uint256;
     using UniversalERC20 for IERC20;
 
@@ -30,7 +31,7 @@ abstract contract OneSplitBdai is OneSplitBaseWrap, OneSplitBdaiBase {
 
                 uint256 btuBalance = btu.balanceOf(address(this));
                 if (btuBalance > 0) {
-                    (,uint256[] memory btuDistribution) = this.getExpectedReturn(
+                    (,uint256[] memory btuDistribution) = OneSplitView.getExpectedReturn(
                         btu,
                         destToken,
                         btuBalance,

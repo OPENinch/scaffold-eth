@@ -8,6 +8,10 @@ import "./OneSplitViewWrapBase.sol";
 abstract contract OneSplitMStableView is OneSplitViewWrapBase {
     using DisableFlags for uint256;
 
+/*TODO: why does this getExpectedReturnWithGas function not work like the others?
+ * what is point in remapping getExpectedReturnWithGas to point into a different function
+ * rather than the method shown here
+ */
     function getExpectedReturnWithGas(
         IERC20 fromToken,
         IERC20 destToken,
@@ -96,6 +100,41 @@ abstract contract OneSplitMStableView is OneSplitViewWrapBase {
             parts,
             flags,
             destTokenEthPriceTimesGasPrice
+        );
+    }
+
+    function _scaleDestTokenEthPriceTimesGasPrice(
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 destTokenEthPriceTimesGasPrice
+    ) internal view returns(uint256) {
+        if (fromToken == destToken) {
+            return destTokenEthPriceTimesGasPrice;
+        }
+
+        uint256 mul = _cheapGetPrice(ETH_ADDRESS, destToken, 0.01 ether);
+        uint256 div = _cheapGetPrice(ETH_ADDRESS, fromToken, 0.01 ether);
+        if (div > 0) {
+            return destTokenEthPriceTimesGasPrice * mul / div;
+        }
+        return 0;
+    }
+
+    function _cheapGetPrice(
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 amount
+    ) internal view returns(uint256 returnAmount) {
+        (returnAmount,,) = this.getExpectedReturnWithGas(
+            fromToken,
+            destToken,
+            amount,
+            1,
+            FLAG_DISABLE_SPLIT_RECALCULATION |
+            FLAG_DISABLE_ALL_SPLIT_SOURCES |
+            FLAG_DISABLE_UNISWAP_V2_ALL |
+            FLAG_DISABLE_UNISWAP,
+            0
         );
     }
 }

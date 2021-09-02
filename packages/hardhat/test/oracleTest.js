@@ -20,23 +20,24 @@ describe("Oracle Test", function () {
         const OneSplitViewWrapDeployment = await ethers.getContractFactory('OneSplitViewWrap');
         const OneSplitDeployment = await ethers.getContractFactory('OneSplit');
         const OneSplitWrapDeployment = await ethers.getContractFactory('OneSplitWrap');
+        const OneSplitAuditDeployment = await ethers.getContractFactory("OneSplitAudit");
 
         OneSplitView = await OneSplitViewDeployment.deploy();
         OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
         OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
+        OneSplitAudit = await OneSplitAuditDeployment.deploy(OneSplitWrap.address);
     });
 
-    async function testDexReturn(from, to) {
+    async function estimateSwapAmount(from, to) {
         
-        res = await OneSplitWrap.getExpectedReturn(
+        res = await OneSplitAudit.getExpectedReturn(
             from[0], // From token
             to[0], // Dest token
             '1000000000000000000', // 1.0  // amount of from token
-            10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+            1, // parts, higher = more granular, but effects gas usage (probably exponentially)
             dexes // flags
         );
-        
         
         return res;
     }
@@ -44,18 +45,17 @@ describe("Oracle Test", function () {
     fromToken = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
 
-    
     list.map(async (toToken,idx) => {
         it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-            const {returnAmount} = await testDexReturn(fromToken,toToken);
+            const {returnAmount} = await estimateSwapAmount(fromToken,toToken);
 
-            console.log('Swap: 1', fromToken[1]);
+            console.log('From token:', fromToken[1]);
+            console.log('To token:', toToken[1]);
             console.log('returnAmount:', returnAmount.toString() / toToken[2], toToken[1]);
-            console.log('assert: ' + returnAmount + ' > ' + list[idx][3]);
+            console.log('Assert: ' + returnAmount + ' > ' + list[idx][3]);
             console.log('\n---------------------------------\n');
 
-            assert(returnAmount > parseInt(list[idx][3]), "errorMessage");
+            assert(returnAmount > parseInt(list[idx][3]), "Assert failed");
         });
     });
-    
 });

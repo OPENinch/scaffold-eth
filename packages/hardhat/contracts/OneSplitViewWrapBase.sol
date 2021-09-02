@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./interfaces/IOneSplitView.sol";
-import "./OneSplitRoot.sol";
+import "./OneSplitConsts.sol";
 
-abstract contract OneSplitViewWrapBase is IOneSplitView, OneSplitRoot {
+abstract contract OneSplitViewWrapBase is IOneSplitView, OneSplitConsts {
     function getExpectedReturn(
         IERC20 fromToken,
         IERC20 destToken,
