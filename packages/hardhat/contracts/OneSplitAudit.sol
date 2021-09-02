@@ -65,7 +65,7 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256 destTokenAmount,
         uint256 minReturn,
         uint256[] distribution,
-        uint256[] flags,
+        uint256 flags,
         address referral,
         uint256 feePercent
     );
@@ -152,38 +152,6 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         );
     }
 
-    /// @notice Calculate expected returning amount of first `tokens` element to
-    /// last `tokens` element through ann the middle tokens with corresponding
-    /// `parts`, `flags` and `destTokenEthPriceTimesGasPrices` array values of each step
-    /// @param tokens (IERC20[]) Address of token or `address(0)` for Ether
-    /// @param amount (uint256) Amount for `fromToken`
-    /// @param parts (uint256[]) Number of pieces source volume could be splitted
-    /// @param flags (uint256[]) Flags for enabling and disabling some features, default 0
-    /// @param destTokenEthPriceTimesGasPrices (uint256[]) destToken price to ETH multiplied by gas price
-    function getExpectedReturnWithGasMulti(
-        IERC20[] memory tokens,
-        uint256 amount,
-        uint256[] memory parts,
-        uint256[] memory flags,
-        uint256[] memory destTokenEthPriceTimesGasPrices
-    )
-        public
-        view
-        returns(
-            uint256[] memory returnAmounts,
-            uint256 estimateGasAmount,
-            uint256[] memory distribution
-        )
-    {
-        return oneSplitImpl.getExpectedReturnWithGasMulti(
-            tokens,
-            amount,
-            parts,
-            flags,
-            destTokenEthPriceTimesGasPrices
-        );
-    }
-
     /// @notice Swap `amount` of `fromToken` to `destToken`
     /// @param fromToken (IERC20) Address of token or `address(0)` for Ether
     /// @param destToken (IERC20) Address of token or `address(0)` for Ether
@@ -229,106 +197,48 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256 flags, // See contants in IOneSplit.sol
         address referral,
         uint256 feePercent
-    ) public payable returns(uint256) {
-        IERC20[] memory tokens = new IERC20[](2);
-        tokens[0] = fromToken;
-        tokens[1] = destToken;
-
-        uint256[] memory flagsArray = new uint256[](1);
-        flagsArray[0] = flags;
-
-        return swapWithReferralMulti(
-            tokens,
-            amount,
-            minReturn,
-            distribution,
-            flagsArray,
-            referral,
-            feePercent
-        );
-    }
-
-    /// @notice Swap `amount` of first element of `tokens` to the latest element of `destToken`
-    /// @param tokens (IERC20[]) Addresses of token or `address(0)` for Ether
-    /// @param amount (uint256) Amount for `fromToken`
-    /// @param minReturn (uint256) Minimum expected return, else revert
-    /// @param distribution (uint256[]) Array of weights for volume distribution returned by `getExpectedReturn`
-    /// @param flags (uint256[]) Flags for enabling and disabling some features, default 0
-    function swapMulti(
-        IERC20[] memory tokens,
-        uint256 amount,
-        uint256 minReturn,
-        uint256[] memory distribution,
-        uint256[] memory flags
-    ) public payable returns(uint256) {
-        return swapWithReferralMulti(
-            tokens,
-            amount,
-            minReturn,
-            distribution,
-            flags,
-            address(0),
-            0
-        );
-    }
-
-    /// @notice Swap `amount` of first element of `tokens` to the latest element of `destToken`
-    /// @param tokens (IERC20[]) Addresses of token or `address(0)` for Ether
-    /// @param amount (uint256) Amount for `fromToken`
-    /// @param minReturn (uint256) Minimum expected return, else revert
-    /// @param distribution (uint256[]) Array of weights for volume distribution returned by `getExpectedReturn`
-    /// @param flags (uint256[]) Flags for enabling and disabling some features, default 0
-    /// @param referral (address) Address of referral
-    /// @param feePercent (uint256) Fees percents normalized to 1e18, limited to 0.03e18 (3%)
-    function swapWithReferralMulti(
-        IERC20[] memory tokens,
-        uint256 amount,
-        uint256 minReturn,
-        uint256[] memory distribution,
-        uint256[] memory flags,
-        address referral,
-        uint256 feePercent
     ) public payable returns(uint256 returnAmount) {
-        require(tokens.length >= 2 && amount > 0, "OneSplit: swap makes no sense");
-        require(flags.length == tokens.length - 1, "OneSplit: flags array length is invalid");
-        require((msg.value != 0) == tokens.first().isETH(), "OneSplit: msg.value should be used only for ETH swap");
+        require(amount > 0, "OneSplit: swap makes no sense");
+        //require(flags.length == tokens.length - 1, "OneSplit: flags array length is invalid");
+        require((msg.value != 0) == fromToken.isETH(), "OneSplit: msg.value should be used only for ETH swap");
         require(feePercent <= 0.03e18, "OneSplit: feePercent out of range");
 
         uint256 gasStart = gasleft();
 
-        Balances memory beforeBalances = _getFirstAndLastBalances(tokens, true);
+        Balances memory beforeBalances = _getFirstAndLastBalances(fromToken, destToken, true);
 
         // Transfer From
         if (amount == type(uint256).max) { //TODO: Is this correct?
             amount = Math.min(
-                tokens.first().balanceOf(msg.sender),
-                tokens.first().allowance(msg.sender, address(this))
+                fromToken.balanceOf(msg.sender),
+                fromToken.allowance(msg.sender, address(this))
             );
         }
-        tokens.first().universalTransferFromSenderToThis(amount);
-        uint256 confirmed = tokens.first().universalBalanceOf(address(this)) - (beforeBalances.ofFromToken);
+        fromToken.universalTransferFromSenderToThis(amount);
+        uint256 confirmed = fromToken.universalBalanceOf(address(this)) - (beforeBalances.ofFromToken);
 
         // Swap
-        tokens.first().universalApprove(address(oneSplitImpl), confirmed);
-        oneSplitImpl.swapMulti{value: (tokens.first().isETH() ? confirmed : 0)}( //TODO: Is this correct?
-            tokens,
+        fromToken.universalApprove(address(oneSplitImpl), confirmed);
+        oneSplitImpl.swap{value: (fromToken.isETH() ? confirmed : 0)}( //TODO: Is this correct?
+            fromToken,
+            destToken,
             confirmed,
             minReturn,
             distribution,
             flags
         );
 
-        Balances memory afterBalances = _getFirstAndLastBalances(tokens, false);
+        Balances memory afterBalances = _getFirstAndLastBalances(fromToken, destToken, false);
 
         // Return
         returnAmount = afterBalances.ofDestToken - (beforeBalances.ofDestToken);
         require(returnAmount >= minReturn, "OneSplit: actual return amount is less than minReturn");
-        tokens.last().universalTransfer(referral, returnAmount * (feePercent) / (1e18));
-        tokens.last().universalTransfer(msg.sender, returnAmount - (returnAmount * (feePercent) / (1e18)));
+        destToken.universalTransfer(referral, returnAmount * (feePercent) / (1e18));
+        destToken.universalTransfer(msg.sender, returnAmount - (returnAmount * (feePercent) / (1e18)));
 
         emit Swapped(
-            tokens.first(),
-            tokens.last(),
+            fromToken,
+            destToken,
             amount,
             returnAmount,
             minReturn,
@@ -340,17 +250,17 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
 
         // Return remainder
         if (afterBalances.ofFromToken > beforeBalances.ofFromToken) {
-            tokens.first().universalTransfer(msg.sender, afterBalances.ofFromToken - (beforeBalances.ofFromToken));
+            fromToken.universalTransfer(msg.sender, afterBalances.ofFromToken - (beforeBalances.ofFromToken));
         }
 
-        if ((flags[0] & (FLAG_ENABLE_CHI_BURN | FLAG_ENABLE_CHI_BURN_BY_ORIGIN)) > 0) {
+        if ((flags & (FLAG_ENABLE_CHI_BURN | FLAG_ENABLE_CHI_BURN_BY_ORIGIN)) > 0) {
             uint256 gasSpent = 21000 + gasStart - gasleft() + 16 * msg.data.length;
             _chiBurnOrSell(
-                payable(((flags[0] & FLAG_ENABLE_CHI_BURN_BY_ORIGIN) > 0) ? tx.origin : msg.sender),
+                payable(((flags & FLAG_ENABLE_CHI_BURN_BY_ORIGIN) > 0) ? tx.origin : msg.sender),
                 (gasSpent + 14154) / 41947
             );
         }
-        else if ((flags[0] & FLAG_ENABLE_REFERRAL_GAS_SPONSORSHIP) > 0) {
+        else if ((flags & FLAG_ENABLE_REFERRAL_GAS_SPONSORSHIP) > 0) {
             uint256 gasSpent = 21000 + gasStart - gasleft() + 16 * msg.data.length;
             IReferralGasSponsor(referral).makeGasDiscount(gasSpent, returnAmount, msg.data);
         }
@@ -381,10 +291,10 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
         uint256 ofDestToken;
     }
 
-    function _getFirstAndLastBalances(IERC20[] memory tokens, bool subValue) internal view returns(Balances memory) {
+    function _getFirstAndLastBalances(IERC20 fromToken, IERC20 destToken, bool subValue) internal view returns(Balances memory) {
         return Balances({
-            ofFromToken: tokens.first().universalBalanceOf(address(this)) - (subValue ? msg.value : 0),
-            ofDestToken: tokens.last().universalBalanceOf(address(this))
+            ofFromToken: fromToken.universalBalanceOf(address(this)) - (subValue ? msg.value : 0),
+            ofDestToken: destToken.universalBalanceOf(address(this))
         });
     }
 }
