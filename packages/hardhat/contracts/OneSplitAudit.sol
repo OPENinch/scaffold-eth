@@ -310,13 +310,25 @@ contract OneSplitAudit is IOneSplit, OneSplitConsts, Ownable {
 
         // Swap
         tokens.first().universalApprove(address(oneSplitImpl), confirmed);
-        oneSplitImpl.swapMulti{value: (tokens.first().isETH() ? confirmed : 0)}( //TODO: Is this correct?
-            tokens,
-            confirmed,
-            minReturn,
-            distribution,
-            flags
-        );
+        //uint256 val = (tokens.first().isETH() ? confirmed : 0);
+        if(tokens.first().isETH()) {
+            oneSplitImpl.swapMulti{value: confirmed}( //TODO: Is this correct?
+                tokens,
+                confirmed,
+                minReturn,
+                distribution,
+                flags
+            );
+        }
+        else {
+            oneSplitImpl.swapMulti{value: 0}( //TODO: Is this correct?
+                tokens,
+                confirmed,
+                minReturn,
+                distribution,
+                flags
+            );
+        }
 
         Balances memory afterBalances = _getFirstAndLastBalances(tokens, false);
 

@@ -65,7 +65,8 @@ abstract contract OneSplitAave is OneSplitBaseWrap {
                 uint256 underlyingAmount = underlying.universalBalanceOf(address(this));
 
                 underlying.universalApprove(aave.core(), underlyingAmount);
-                aave.deposit{value: (underlying.isETH() ? underlyingAmount : 0)}(
+                uint256 val = underlying.isETH() ? underlyingAmount : 0;
+                aave.deposit{value: val}(
                     underlying.isETH() ? ETH_ADDRESS : underlying,
                     underlyingAmount,
                     1101

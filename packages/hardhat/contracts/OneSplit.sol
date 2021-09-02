@@ -469,7 +469,8 @@ contract OneSplit is IOneSplit, OneSplitConsts {
             destToken.isETH() ? bancorEtherToken : destToken
         );
         fromToken.universalApprove(address(bancorNetwork), amount);
-        bancorNetwork.convert{value: fromToken.isETH() ? amount : 0}(path, amount, 1);
+        uint256 val = fromToken.isETH() ? amount : 0;
+        bancorNetwork.convert{value: val}(path, amount, 1);
     }
 
     function _swapOnOasis(

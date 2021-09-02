@@ -245,8 +245,7 @@ library Calculate {
         ) = curveRegistry.get_pool_info(address(curve));
 
         for (uint256 k = 0; k < 8 && balances[k] > 0; k++) {
-            precisions[k] =
-                10**(18 - (haveUnderlying ? underlying_decimals : decimals)[k]);
+            precisions[k] = 10 ** (18 - (haveUnderlying ? underlying_decimals[k] : decimals[k]));
             if (haveUnderlying) {
                 rates[k] = (underlying_balances[k] * 1e18) / (balances[k]);
             } else {

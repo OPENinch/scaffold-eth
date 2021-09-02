@@ -200,7 +200,8 @@ contract OneSplitWrap is
         uint256 flags
     ) override internal {
         fromToken.universalApprove(address(oneSplit), amount);
-        oneSplit.swap{value: (fromToken.isETH() ? amount : 0)}(
+        uint256 val = fromToken.isETH() ? amount : 0;
+        oneSplit.swap{value: val}(
             fromToken,
             destToken,
             amount,
