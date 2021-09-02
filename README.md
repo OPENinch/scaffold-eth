@@ -1,5 +1,5 @@
-# OPENinchProtocol
-A fully on-chain dex aggregator from a fork of 1InchV1.
+# PredaDEX
+A fully on-chain dex aggregator.
 
 Supports:
 * Uniswap V2 and V3
