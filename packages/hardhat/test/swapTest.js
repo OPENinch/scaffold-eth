@@ -16,22 +16,17 @@ describe("Swap Test", function () {
     before(async () => {
         [user1, user2, ...addrs] = await ethers.getSigners();
 
-        //const OneSplitAuditDeployment = await ethers.getContractFactory("OneSplitAudit");
-
-
         const OneSplitViewDeployment = await ethers.getContractFactory("OneSplitView");
         const OneSplitViewWrapDeployment = await ethers.getContractFactory('OneSplitViewWrap');
         const OneSplitDeployment = await ethers.getContractFactory('OneSplit');
         const OneSplitWrapDeployment = await ethers.getContractFactory('OneSplitWrap');
-
-
-        //OneSplitAudit = await OneSplitAuditDeployment.deploy();
-
-
+        const OneSplitAuditDeployment = await ethers.getContractFactory("OneSplitAudit");
+ 
         OneSplitView = await OneSplitViewDeployment.deploy();
         OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
         OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
+        OneSplitAudit = await OneSplitAuditDeployment.deploy(OneSplitWrap.address);
 
         await fundAccounts();
     });
@@ -68,11 +63,11 @@ describe("Swap Test", function () {
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user1.address, amountWeth);
-        await weth.connect(user1).approve(OneSplitWrap.address, amountWeth);
+        await weth.connect(user1).approve(OneSplitAudit.address, amountWeth);
         await weth
           .connect(impersonatedAccountWETH)
           .transfer(user2.address, amountWeth);
-        await weth.connect(user2).approve(OneSplitWrap.address, amountWeth);
+        await weth.connect(user2).approve(OneSplitAudit.address, amountWeth);
     }
 
     fromToken = Tokens.weth;
@@ -81,20 +76,31 @@ describe("Swap Test", function () {
     list.map(async (toToken,idx) => {
         if (fromToken[1] != list[idx][1]) {
             it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
-                const { returnAmount, distribution } = await OneSplitWrap.getExpectedReturn(
+                const { returnAmount, distribution } = await OneSplitAudit.getExpectedReturn(
                     fromToken[0], // From token
                     toToken[0], // Dest token
                     '1000000000000000000', // 1.0  // amount of from token
-                    10, // parts, higher = more granular, but effects gas usage (probably exponentially)
+                    1, // parts, higher = more granular, but effects gas usage (probably exponentially)
                     dexes // flags
                 );
 
-                const res = await OneSplitWrap.swap(
+                console.log('Using dist:', distribution.map(a => a.toString()));
+            /********************
+                +---------------------+-----------------------+------------------------+----------------------+--------------------+
+                | _swapOnUniswap      | _swapOnBancor         | _swapOnCurveCompound   | _swapOnCurveUSDT     | _swapOnCurveY      |
+                | _swapOnCurveBinance | _swapOnCurveSynthetix | _swapOnUniswapCompound | _swapOnUniswapChai   | _swapOnUniswapAave |
+                | _swapOnUniswapV2    | _swapOnUniswapV2ETH   | _swapOnUniswapV2DAI    | _swapOnUniswapV2USDC | _swapOnCurvePAX    |
+                | _swapOnCurveRenBTC  | _swapOnCurveTBTC      | _swapOnShell           | _swapOnMStableMUSD   | _swapOnCurveSBTC   |
+                | _swapOnBalancer1    | _swapOnBalancer2      | _swapOnBalancer3       |                      |                    |
+                +---------------------+-----------------------+------------------------+----------------------+--------------------+
+             ********************/
+            //Note: seems to favor UNI-v2
+
+                const res = await OneSplitAudit.swap(
                     fromToken[0], // From token
                     toToken[0], // Dest token
                     '1000000000000000000', // 1 * 10**18
-                    0,
-                    //returnAmount * 0.9, // min return
+                    returnAmount, // min return
                     distribution,
                     dexes // flags
                 );

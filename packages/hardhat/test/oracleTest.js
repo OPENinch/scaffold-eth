@@ -20,16 +20,18 @@ describe("Oracle Test", function () {
         const OneSplitViewWrapDeployment = await ethers.getContractFactory('OneSplitViewWrap');
         const OneSplitDeployment = await ethers.getContractFactory('OneSplit');
         const OneSplitWrapDeployment = await ethers.getContractFactory('OneSplitWrap');
+        const OneSplitAuditDeployment = await ethers.getContractFactory("OneSplitAudit");
 
         OneSplitView = await OneSplitViewDeployment.deploy();
         OneSplitViewWrap = await OneSplitViewWrapDeployment.deploy(OneSplitView.address);
         OneSplit = await OneSplitDeployment.deploy(OneSplitViewWrap.address)
         OneSplitWrap = await OneSplitWrapDeployment.deploy(OneSplitViewWrap.address, OneSplit.address);
+        OneSplitAudit = await OneSplitAuditDeployment.deploy(OneSplitWrap.address);
     });
 
     async function estimateSwapAmount(from, to) {
         
-        res = await OneSplitWrap.getExpectedReturn(
+        res = await OneSplitAudit.getExpectedReturn(
             from[0], // From token
             to[0], // Dest token
             '1000000000000000000', // 1.0  // amount of from token
@@ -42,7 +44,7 @@ describe("Oracle Test", function () {
 
     fromToken = Tokens.eth;
     dexes = Flags.FLAG_ANY; /* To select specific dex(es) use syntax: dexes = FLAG_DISABLE_ALL - FLAG_DISABLE_<dex>; */
-    
+
     list.map(async (toToken,idx) => {
         it(('should work with ANY ' + fromToken[1] + ' => ' + list[idx][1]).toString(), async function (){
             const {returnAmount} = await estimateSwapAmount(fromToken,toToken);
@@ -56,5 +58,4 @@ describe("Oracle Test", function () {
             assert(returnAmount > parseInt(list[idx][3]), "Assert failed");
         });
     });
-    
 });
